@@ -28,7 +28,7 @@ async function main() {
 
   // Create sensor data examples
   const exampleSensorData = [
-    { value: 25.3, sensorTypeId: 1 },
+    { value: 25.4, sensorTypeId: 1 },
     { value: 27.1, sensorTypeId: 1 },
     { value: 45.2, sensorTypeId: 2 },
     { value: 50.8, sensorTypeId: 2 },
