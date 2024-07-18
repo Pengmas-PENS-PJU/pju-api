@@ -1,24 +1,24 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function main() {
-  // Create sensor types
-  const sensorTypes = [
-    { name: 'Temperature', unit: '°C' },
-    { name: 'Humidity', unit: '%' },
-    { name: 'Pressure', unit: 'hPa' },
-    { name: 'PM2.5', unit: 'µg/m³' },
-    { name: 'PM10', unit: 'µg/m³' },
-    { name: 'CO', unit: 'ppm' },
-    { name: 'CO2', unit: 'ppm' },
-    { name: 'O3', unit: 'ppm' },
-    { name: 'NO2', unit: 'ppm' },
-    { name: 'SO2', unit: 'ppm' },
-    { name: 'NH3', unit: 'ppm' },
-    { name: 'H2S', unit: 'ppm' },
-    { name: 'CH4', unit: 'ppm' }
-  ];
+const sensorTypes = [
+  { name: 'Temperature', unit: '°C' },
+  { name: 'Humidity', unit: '%' },
+  { name: 'Pressure', unit: 'hPa' },
+  { name: 'PM2.5', unit: 'µg/m³' },
+  { name: 'PM10', unit: 'µg/m³' },
+  { name: 'CO', unit: 'ppm' },
+  { name: 'CO2', unit: 'ppm' },
+  { name: 'O3', unit: 'ppm' },
+  { name: 'NO2', unit: 'ppm' },
+  { name: 'SO2', unit: 'ppm' },
+  { name: 'NH3', unit: 'ppm' },
+  { name: 'H2S', unit: 'ppm' },
+  { name: 'CH4', unit: 'ppm' }
+];
 
+async function main() {
+  // Insert SensorType data
   const createdSensorTypes = await prisma.sensorType.createMany({
     data: sensorTypes,
     skipDuplicates: true, // Avoid duplicating sensor types if they already exist
@@ -26,7 +26,7 @@ async function main() {
 
   console.log(`Created ${createdSensorTypes.count} sensor types`);
 
-  // Create sensor data examples
+  // Create example SensorData
   const exampleSensorData = [
     { value: 25.3, sensorTypeId: 1 },
     { value: 27.1, sensorTypeId: 1 },
@@ -54,7 +54,7 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error(e);
     process.exit(1);
   })
