@@ -1,9 +1,16 @@
-var express = require('express');
-var router = express.Router();
+const express = require("express");
+const {
+  GetDataSensor,
+  AddDataSensor,
+  GetSensorTypes,
+  AddSensorType,
+} = require("../controller/sensor.js");
+const router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+router.post("/data", AddDataSensor);
+router.get("/data", GetDataSensor);
+
+router.get("/types", GetSensorTypes);
+router.post("/types", AddSensorType);
 
 module.exports = router;

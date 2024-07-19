@@ -1,10 +1,10 @@
 const express = require("express");
-const router = express.Router();
+const { getIo } = require("../socket");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-// Endpoint untuk menambahkan data sensor
-router.post("/data", async (req, res) => {
+// tambah data sensor
+exports.AddDataSensor = async (req, res) => {
   const { value, sensorTypeId } = req.body;
   try {
     const sensorData = await prisma.sensorData.create({
@@ -13,26 +13,29 @@ router.post("/data", async (req, res) => {
         sensorTypeId: parseInt(sensorTypeId),
       },
     });
+    const io = getIo();
+    io.emit("dataUpdate", sensorData);
     res.json(sensorData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
+};
 
-// Endpoint untuk mendapatkan semua data sensor
-router.get("/data", async (req, res) => {
+// ambil data sensor
+exports.GetDataSensor = async (req, res) => {
   try {
     const sensorData = await prisma.sensorData.findMany({
       include: { sensorType: true },
+      orderBy: { timestamp: "desc" },
     });
     res.json(sensorData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
+};
 
-// Endpoint untuk menambahkan jenis sensor
-router.post("/type", async (req, res) => {
+// tambah jenis sensor
+exports.AddSensorType = async (req, res) => {
   const { name, unit } = req.body;
   try {
     const sensorType = await prisma.sensorType.create({
@@ -45,16 +48,14 @@ router.post("/type", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
+};
 
-// Endpoint untuk mendapatkan semua jenis sensor
-router.get("/type", async (req, res) => {
+// ambil jenis sensor
+exports.GetSensorTypes = async (req, res) => {
   try {
     const sensorTypes = await prisma.sensorType.findMany();
     res.json(sensorTypes);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
-
-module.exports = router;
+};
