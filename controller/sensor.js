@@ -10,7 +10,9 @@ exports.AddDataSensor = async (req, res) => {
     const sensorData = await prisma.sensorData.create({
       data: {
         value: parseFloat(value),
-        sensorTypeId: parseInt(sensorTypeId),
+        sensorType: {
+          connect: { id: parseInt(sensorTypeId) },
+        },
       },
     });
     const io = getIo();
