@@ -1,61 +1,38 @@
 const express = require("express");
-const { getIo } = require("../socket");
+const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-// tambah data sensor
-exports.AddDataSensor = async (req, res) => {
+// Endpoint untuk menambahkan data sensor
+router.post("/data", async (req, res) => {
   const { value, sensorTypeId } = req.body;
   try {
     const sensorData = await prisma.sensorData.create({
       data: {
         value: parseFloat(value),
-        sensorType: {
-          connect: { id: parseInt(sensorTypeId) },
-        },
+        sensorTypeId: parseInt(sensorTypeId),
       },
     });
-
-    // trigger event dataUpdate di client
-    const io = getIo();
-    io.emit("dataUpdate", sensorData);
-
     res.json(sensorData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
+});
 
-// ambil data sensor
-exports.GetDataSensor = async (req, res) => {
+// Endpoint untuk mendapatkan semua data sensor
+router.get("/data", async (req, res) => {
   try {
     const sensorData = await prisma.sensorData.findMany({
       include: { sensorType: true },
-      orderBy: { timestamp: "desc" },
     });
     res.json(sensorData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
+});
 
-// ambil data tertentu berdasarkan type sensor
-exports.GetDataSensorByType = async (req, res) => {
-  const sensor_id = req.params.sensor_id;
-  try {
-    const sensorData = await prisma.sensorData.findMany({
-      where: { sensorTypeId: parseInt(sensor_id) },
-      include: { sensorType: true },
-      orderBy: { timestamp: "desc" },
-    });
-    res.json(sensorData);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// tambah jenis sensor
-exports.AddSensorType = async (req, res) => {
+// Endpoint untuk menambahkan jenis sensor
+router.post("/type", async (req, res) => {
   const { name, unit } = req.body;
   try {
     const sensorType = await prisma.sensorType.create({
@@ -68,14 +45,16 @@ exports.AddSensorType = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
+});
 
-// ambil jenis sensor
-exports.GetSensorTypes = async (req, res) => {
+// Endpoint untuk mendapatkan semua jenis sensor
+router.get("/type", async (req, res) => {
   try {
     const sensorTypes = await prisma.sensorType.findMany();
     res.json(sensorTypes);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
+});
+
+module.exports = router;

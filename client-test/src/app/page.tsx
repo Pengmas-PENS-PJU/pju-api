@@ -18,6 +18,7 @@ export default function Home() {
   const [data, setData] = useState<SensorData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [isLogged, setIsLogged] = useState<boolean>(false);
 
   const fetchData = async () => {
     try {
@@ -37,7 +38,25 @@ export default function Home() {
     setIsUpdating(false);
   };
 
+  const checkIsLogged = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get("http://localhost:5000/protected", {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setIsLogged(true);
+    } catch (error: any) {
+      if (error.response.status === 401 || error.response.status === 403) {
+        localStorage.removeItem("token");
+        setIsLogged(false);
+      }
+    }
+  };
+
   useEffect(() => {
+    checkIsLogged();
     fetchData();
 
     socket.on("dataUpdate", handleDataUpdate);
@@ -62,6 +81,7 @@ export default function Home() {
               </li>
             ))}
           </ul>
+          {isLogged && <h2>This showed when admin logged</h2>}
         </>
       )}
     </div>
