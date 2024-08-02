@@ -22,16 +22,16 @@ model User {
 }
 
 model SensorType {
-  id        Int          @id @default(autoincrement())
-  name      String       @unique
+  id        String      @id @default(uuid())
+  name      String      @unique
   unit      String
   sensorData SensorData[]
 }
 
 model SensorData {
-  id          Int       @id @default(autoincrement())
-  value       Float
-  timestamp   DateTime  @default(now())
-  sensorTypeId Int
-  sensorType  SensorType @relation(fields: [sensorTypeId], references: [id])
+  id           Int        @id @default(autoincrement())
+  value        Float
+  timestamp    DateTime   @default(now())
+  sensorTypeId String
+  sensorType   SensorType @relation(fields: [sensorTypeId], references: [id])
 }
