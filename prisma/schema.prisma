@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,23 +9,23 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  name     String?
   password String
 }
 
 model SensorType {
-  id        Int          @id @default(autoincrement())
-  name      String       @unique
-  unit      String
+  id         String       @id
+  name       String       @unique
+  unit       String
   sensorData SensorData[]
 }
 
 model SensorData {
-  id          Int       @id @default(autoincrement())
-  value       Float
-  timestamp   DateTime  @default(now())
-  sensorTypeId Int
-  sensorType  SensorType @relation(fields: [sensorTypeId], references: [id])
+  id           Int        @id @default(autoincrement())
+  value        Float
+  timestamp    DateTime   @default(now())
+  sensorTypeId String
+  sensorType   SensorType @relation(fields: [sensorTypeId], references: [id])
 }
