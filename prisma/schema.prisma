@@ -16,8 +16,9 @@ model User {
 }
 
 model SensorType {
-  id         String       @id
-  name       String       @unique
+  id         Int        @id @default(autoincrement())
+  name       String      @unique
+  code       String      @unique
   unit       String
   sensorData SensorData[]
 }
@@ -26,6 +27,14 @@ model SensorData {
   id           Int        @id @default(autoincrement())
   value        Float
   timestamp    DateTime   @default(now())
-  sensorTypeId String
+  sensorTypeId Int
   sensorType   SensorType @relation(fields: [sensorTypeId], references: [id])
+}
+
+model LampLog {
+  id           Int        @id @default(autoincrement()) 
+  on           Boolean
+  brightness  Int
+  isPJU        Boolean
+  timestamp    DateTime   @default(now())
 }

@@ -8,6 +8,25 @@
 #     "sensorTypeId": 2
 # }
 
+POST http://localhost:5000/data/All HTTP/1.1
+Content-Type: application/json
+
+{
+    "sensor": [
+      { "sensorCode": "TEMP", "value": 70.0 },
+      { "sensorCode": "HUM", "value": 34.5 },
+      { "sensorCode": "SOLAR", "value": 800.0 },
+      { "sensorCode": "RAIN", "value": 12.3 },
+      { "sensorCode": "WINDSPD", "value": 5.5 },
+      { "sensorCode": "CO", "value": 0.9 }
+    ],
+    "lamp": {
+      "status": "on",
+      "bright": 80,
+      "isPJU": true
+    }
+}
+
 # POST http://localhost:5000/type HTTP/1.1
 # Content-Type: application/json
 
@@ -19,10 +38,10 @@
 
 # GET http://localhost:5000/data HTTP/1.1
 
-POST http://localhost:5000/register HTTP/1.1
-Content-Type: application/json
+# POST http://localhost:5000/register HTTP/1.1
+# Content-Type: application/json
 
-{
-    "email": "admin@gmail.com",
-    "password": "adminMSIB"
-}
+# {
+#     "email": "admin@gmail.com",
+#     "password": "adminMSIB"
+# }
