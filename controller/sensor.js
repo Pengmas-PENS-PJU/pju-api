@@ -11,7 +11,7 @@ exports.AddDataSensor = async (req, res) => {
       data: {
         value: parseFloat(value),
         sensorType: {
-          connect: { id: parseInt(sensorTypeId) },
+          connect: { id: sensorTypeId },
         },
       },
     });
@@ -25,6 +25,8 @@ exports.AddDataSensor = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// create new sensor data
 
 // ambil data sensor
 exports.GetDataSensor = async (req, res) => {
@@ -44,7 +46,7 @@ exports.GetDataSensorByType = async (req, res) => {
   const sensor_id = req.params.sensor_id;
   try {
     const sensorData = await prisma.sensorData.findMany({
-      where: { sensorTypeId: parseInt(sensor_id) },
+      where: { sensorTypeId: sensor_id },
       include: { sensorType: true },
       orderBy: { timestamp: "desc" },
     });
@@ -53,6 +55,20 @@ exports.GetDataSensorByType = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.GetLatestSensorDataByType = async (req, res) => {
+  const sensor_id = req.params.sensor_id;
+  try {
+    const sensorData = await prisma.sensorData.findFirst({
+      where: { sensorTypeId: sensor_id },
+      include: { sensorType: true },
+      orderBy: { timestamp: "desc" },
+    });
+    res.json(sensorData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
 // tambah jenis sensor
 exports.AddSensorType = async (req, res) => {

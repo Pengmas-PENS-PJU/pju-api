@@ -22,7 +22,7 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/data");
+      const response = await axios.get("http://localhost:5000/data/all");
       setData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
