@@ -25,24 +25,24 @@ async function main() {
 
   console.log(`Created ${createdSensorTypes.count} sensor types`);
 
-  // Create example SensorData
-  const exampleSensorData = [
-    { value: 45.2, sensorTypeId: 1 },
-    { value: 27.1, sensorTypeId: 2 },
-    { value: 800, sensorTypeId: 3 },
-    { value: 10, sensorTypeId: 4 },
-    { value: 1.5, sensorTypeId: 5 },
-    { value: 12.5, sensorTypeId: 6 },
-    { value: 180, sensorTypeId: 7 },
-    { value: 0.9, sensorTypeId: 8 },
-    { value: 0.05, sensorTypeId: 9 },
-    { value: 0.02, sensorTypeId: 10 },
-    { value: 25.0, sensorTypeId: 11 },
-  ];
+  // // Create example SensorData
+  // const exampleSensorData = [
+  //   { value: 45.2, sensorTypeId: 1 },
+  //   { value: 27.1, sensorTypeId: 2 },
+  //   { value: 800, sensorTypeId: 3 },
+  //   { value: 10, sensorTypeId: 4 },
+  //   { value: 1.5, sensorTypeId: 5 },
+  //   { value: 12.5, sensorTypeId: 6 },
+  //   { value: 180, sensorTypeId: 7 },
+  //   { value: 0.9, sensorTypeId: 8 },
+  //   { value: 0.05, sensorTypeId: 9 },
+  //   { value: 0.02, sensorTypeId: 10 },
+  //   { value: 25.0, sensorTypeId: 11 },
+  // ];
 
-  await prisma.sensorData.createMany({
-    data: exampleSensorData,
-  });
+  // await prisma.sensorData.createMany({
+  //   data: exampleSensorData,
+  // });
 
   console.log(`Created ${exampleSensorData.length} sensor data entries`);
 }
