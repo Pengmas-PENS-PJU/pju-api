@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 // tambah data sensor
 exports.AddDataSensor = async (req, res) => {
-  const { value, sensorTypeId } = req.body;
+  const { value, sensorTypeId, code } = req.body;
   try {
     const sensorData = await prisma.sensorData.create({
       data: {
@@ -68,16 +68,17 @@ exports.GetLatestSensorDataByType = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
 
 // tambah jenis sensor
 exports.AddSensorType = async (req, res) => {
-  const { name, unit } = req.body;
+  const { name, unit, code } = req.body;
   try {
     const sensorType = await prisma.sensorType.create({
       data: {
-        name,
-        unit,
+        name: name,
+        unit: unit,
+        code: code,
       },
     });
     res.json(sensorType);
@@ -95,4 +96,3 @@ exports.GetSensorTypes = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
