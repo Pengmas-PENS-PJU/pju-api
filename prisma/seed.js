@@ -44,7 +44,7 @@ async function main() {
   //   data: exampleSensorData,
   // });
 
-  console.log(`Created ${exampleSensorData.length} sensor data entries`);
+  // console.log(`Created ${exampleSensorData.length} sensor data entries`);
 }
 
 main()

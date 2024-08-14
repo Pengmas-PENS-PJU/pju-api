@@ -16,7 +16,7 @@ const port = process.env.PORT || 5000;
 const app = express();
 
 //  run seeder
-await seeder();
+seeder;
 
 // alamat diizinkan cors
 app.use(
