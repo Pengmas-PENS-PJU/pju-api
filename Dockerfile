@@ -11,7 +11,7 @@ COPY . .
 RUN npm install
 
 # Prisma migrate
-RUN npx prisma migrate dev --name init
+RUN npx prisma migrate
 
 # Run Seed: node prisma/seed.js
 RUN node prisma/seed.js
