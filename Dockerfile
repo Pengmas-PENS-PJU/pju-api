@@ -20,4 +20,4 @@ RUN node prisma/seed.js
 EXPOSE 5000
 
 # Jalankan aplikasi
-CMD ["node", "app.js"]
+CMD ["node", "dist/final.js"]
