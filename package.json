@@ -6,7 +6,8 @@
     "start": "node app.js",
     "startdev": "nodemon index.js",
     "seed": "node prisma/seed.js",
-    "build": "webpack"
+    "build": "webpack",
+    "prod": "node dist/final.js"
   },
   "dependencies": {
     "@prisma/client": "^5.17.0",
