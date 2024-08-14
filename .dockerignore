@@ -4,5 +4,4 @@ build/
 .git
 *.md
 .gitignore
-.env
 prisma/migrations/
