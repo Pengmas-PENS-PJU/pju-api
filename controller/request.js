@@ -39,7 +39,7 @@ exports.AddAll = async (req, res) => {
 
     if (pju) {
       const lamp = pju.lamp;
-      
+
       if (lamp) {
         lampData = await prisma.lampLog.create({
           data: {
@@ -58,8 +58,20 @@ exports.AddAll = async (req, res) => {
     }
 
     // trigger fe
+    // Initialize io and prepare data for socket emission
     const io = getIo();
-    io.emit('dataUpdate', { sensorData, lampData });
+
+    // Determine what data to emit based on conditions
+    if (sensorData && lampData) {
+      // If both sensorData and lampData exist
+      io.emit('dataUpdate', { sensorData, lampData });
+    } else if (sensorData) {
+      // If only sensorData exists
+      io.emit('dataUpdate', { sensorData });
+    } else if (lampData) {
+      // If only lampData exists
+      io.emit('dataUpdate', { lampData });
+    }
 
     res.status(201).json({
       success: true,
