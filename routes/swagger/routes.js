@@ -14,7 +14,7 @@
  *           schema:
  *             $ref: '#/components/schemas/CreateSensorAndPjuRequest'
  *     responses:
- *       200:
- *         description: Success
+ *       201:
+ *         description: Created
  *
  */
