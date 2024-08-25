@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 // Add Lamp Data
 exports.AddLampLog = async (req, res) => {
-  const { on, brightness } = req.body;
+  const { on, brightness, isPJU = false } = req.body;
 
   try {
     const lampLog = await prisma.lampLog.create({

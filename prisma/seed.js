@@ -4,15 +4,25 @@ const prisma = new PrismaClient();
 const sensorTypes = [
   { name: "Humidity", code: "HUM", unit: "%" },
   { name: "Temperature", code: "TEMP", unit: "°C" },
-  { name: "Solar Radiation", code: "SOLAR", unit: "W/m²" },
+  { name: "Solar Radiation", code: "SOLAR", unit: "kWH/m²" },
   { name: "Rainfall Level", code: "RAIN", unit: "mm" },
-  { name: "Water Level", code: "WATER", unit: "m" },
-  { name: "Wind Speed", code: "WINDSPD", unit: "m/s" },
+  { name: "Water Level", code: "WATER", unit: "cm" },
+  { name: "Wind Speed", code: "WINDSPD", unit: "mph" },
   { name: "Wind Direction", code: "WINDDIR", unit: "°" },
   { name: "Carbon Monoxide", code: "CO", unit: "ppm" },
   { name: "Nitrogen Dioxide", code: "NO2", unit: "ppm" },
   { name: "Ozone", code: "O3", unit: "ppm" },
   { name: "Particulate Matter", code: "PM", unit: "µg/m³" },
+];
+
+const MonitorTypes = [
+  { name: "Voltage", code: "VOLT", unit: "V" },
+  { name: "Current", code: "CURR", unit: "A" },
+  { name: "Power", code: "POW", unit: "Watt" },
+  { name: "Power Factor", code: "COSPHI", unit: "PF" },
+  { name: "Temperature", code: "TEMP", unit: "°C" },
+  { name: "Frequency", code: "FREQ", unit: "Hz" },
+  { name: "Luminouse Intensity", code: "LUM", unit: "Lumen" },
 ];
 
 async function main() {
@@ -23,7 +33,13 @@ async function main() {
     skipDuplicates: true, // Avoid duplicating sensor types if they already exist
   });
 
+  const createdMonitorTypes = await prisma.monitorType.createMany({
+    data: MonitorTypes,
+    skipDuplicates: true, // Avoid duplicating monitor types if they already exist
+  });
+
   console.log(`Created ${createdSensorTypes.count} sensor types`);
+  console.log(`Created ${createdSensorTypes.count} monitor types`);
 
   // // Create example SensorData
   // const exampleSensorData = [
@@ -47,11 +63,11 @@ async function main() {
   // console.log(`Created ${exampleSensorData.length} sensor data entries`);
 }
 
-// main()
-//   .catch((e) => {
-//     console.error(e);
-//     process.exit(1);
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect();
-//   });
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

@@ -1,5 +1,3 @@
-
-
 const express = require("express");
 const {
   GetDataSensor,
@@ -22,7 +20,6 @@ router.get("/data", GetDataSensor);
 
 router.get("/types", GetSensorTypes);
 router.post("/types", AddSensorType);
-
 
 // fix all data sensor
 router.post("/data/all", AddAll);

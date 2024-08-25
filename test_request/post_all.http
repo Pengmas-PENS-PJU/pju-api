@@ -3,22 +3,30 @@ Content-Type: application/json
 
 {
     "sensor": [
-      { "sensorCode": "TEMP", "value": 70.0 },    // Temperature
-      { "sensorCode": "HUM", "value": 34.5 },     // Humidity
-      { "sensorCode": "SOLAR", "value": 800.0 },  // Solar Radiation
-      { "sensorCode": "RAIN", "value": 12.3 },    // Rainfall Level
-      { "sensorCode": "WATER", "value": 1.5 },    // Water Level
-      { "sensorCode": "WINDSPD", "value": 5.5 },  // Wind Speed
-      { "sensorCode": "WINDDIR", "value": 90.0 }, // Wind Direction
-      { "sensorCode": "CO", "value": 0.9 },       // Carbon Monoxide
-      { "sensorCode": "NO2", "value": 0.03 },     // Nitrogen Dioxide
-      { "sensorCode": "O3", "value": 0.05 },      // Ozone
-      { "sensorCode": "PM", "value": 25.0 }       // Particulate Matter
+      { "sensorCode": "TEMP", "value": 70.0 },    
+      { "sensorCode": "HUM", "value": 34.5 },     
+      { "sensorCode": "SOLAR", "value": 800.0 },  
+      { "sensorCode": "RAIN", "value": 12.3 },    
+      { "sensorCode": "WATER", "value": 1.5 },    
+      { "sensorCode": "WINDSPD", "value": 5.5 },  
+      { "sensorCode": "WINDDIR", "value": 90.0 }, 
+      { "sensorCode": "CO", "value": 0.9 },       
+      { "sensorCode": "NO2", "value": 0.03 },     
+      { "sensorCode": "O3", "value": 0.05 },      
+      { "sensorCode": "PM", "value": 25.0 }       
 
     ],
-    "lamp": {
-      "status": "on",
-      "bright": 80,
-      "isPJU": true
+    "pju" : {
+      "lamp": {
+        "brightness": 80,
+        "on" : false,
+        "isPJU": true
+      }, 
+      "monitor" : [ 
+        { "attributeCode" : "VOLT", "value" : 12.0  },
+        { "attributeCode" : "CURR", "value" : 20.3  },
+        { "attributeCode" : "POW", "value" : 5.0  }
+      ]
+
     }
 }

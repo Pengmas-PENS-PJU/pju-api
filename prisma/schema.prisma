@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  
 }
 
 model User {
@@ -34,7 +34,24 @@ model SensorData {
 model LampLog {
   id           Int        @id @default(autoincrement()) 
   on           Boolean
-  brightness  Int
+  brightness   Int
   isPJU        Boolean
+  automated    Boolean
   timestamp    DateTime   @default(now())
+}
+
+model MonitorType {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  code          String    @unique
+  unit          String    @unique
+  monitorData   MonitorData[]
+}
+
+model MonitorData {
+  id           Int        @id @default(autoincrement())
+  value        Float
+  timestamp    DateTime   @default(now())
+  monitorTypeId Int
+  monitorType   MonitorType @relation(fields : [monitorTypeId], references : [id])
 }

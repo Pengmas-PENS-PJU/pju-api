@@ -1,8 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { getIo } = require('../socket');
-const lampLib = require('../lib/lampLog');
-const { PrismaClient } = require('@prisma/client');
+const { getIo } = require("../socket");
+const sensorService = require("../services/sensor.js");
+const monitorService = require("../services/monitor.js");
+const lampService = require("../services/lamp.js");
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // Add All
@@ -11,49 +13,35 @@ exports.AddAll = async (req, res) => {
     const { sensor, pju } = req.body;
 
     let sensorData = null;
+    let pjuData = {
+      lamp: null,
+      monitor: null,
+    };
 
     if (sensor) {
-      const sensorPromises = sensor.map(async (sensorItem) => {
-        const sensorType = await prisma.sensorType.findUnique({
-          where: { code: sensorItem.sensorCode },
-        });
-
-        if (!sensorType) {
-          throw new Error(`Sensor type with code ${sensorItem.sensorCode} not found`);
-        }
-
-        return await prisma.sensorData.create({
-          data: {
-            value: sensorItem.value,
-            sensorTypeId: sensorType.id,
-          },
-          include: { sensorType: true },
-        });
-      });
-
-      // wait till done
-      sensorData = await Promise.all(sensorPromises);
+      sensorData = await sensorService.addSensorData(sensor);
     }
-
-    let lampData = null;
 
     if (pju) {
       const lamp = pju.lamp;
+      const monitor = pju.monitor;
 
-      if (lamp) {
-        lampData = await prisma.lampLog.create({
-          data: {
-            on: lamp.on,
-            brightness: lamp.brightness,
-            isPJU: lamp.isPJU,
-          },
-        });
+      // send monitor data
+      if (monitor) {
+        pjuData.monitor = await monitorService.addMonitorData(monitor);
       }
 
-      // check is lamp log in same status
-      const { isSame, success } = lampLib.isLampStatusSame();
-      if (!isSame && lampData) {
-        lampData.on = !lampData.on;
+      // send lamp log
+      if (lamp) {
+        pjuData.lamp = lampService.addLampLog(lamp);
+      }
+
+      // check if automated
+
+      // check is lamp on off in same status
+      const { isSame, success } = lampService.isLampStatusSame();
+      if (!isSame && pjuData.lamp) {
+        pjuData.lamp.on = !pjuData.lamp.on;
       }
     }
 
@@ -62,31 +50,30 @@ exports.AddAll = async (req, res) => {
     const io = getIo();
 
     // Determine what data to emit based on conditions
-    if (sensorData && lampData) {
+    if (sensorData && pjuData) {
       // If both sensorData and lampData exist
-      io.emit('dataUpdate', { sensorData, lampData });
+      io.emit("dataUpdate", { sensorData, pjuData });
     } else if (sensorData) {
       // If only sensorData exists
-      io.emit('dataUpdate', { sensorData });
-    } else if (lampData) {
+      io.emit("dataUpdate", { sensorData });
+    } else if (pjuData) {
       // If only lampData exists
-      io.emit('dataUpdate', { lampData });
+      io.emit("dataUpdate", { pjuData });
     }
 
     res.status(201).json({
       success: true,
-      message: 'Data berhasil disimpan',
-      error: '',
+      message: "Data berhasil disimpan",
       data: {
         sensorData,
-        lampData,
+        pjuData,
       },
     });
   } catch (error) {
-    console.error('Error saving data:', error.message);
+    console.error("Error saving data:", error.message);
     res.status(500).json({
       success: false,
-      message: 'Terjadi kesalahan saat menyimpan data',
+      message: "Terjadi kesalahan saat menyimpan data",
       error: error.message,
       data: {},
     });
@@ -96,38 +83,29 @@ exports.AddAll = async (req, res) => {
 // get last data sensor
 exports.GetAll = async (req, res) => {
   try {
-    const sensorTypes = await prisma.sensorType.findMany();
+    // ambil data sensor
+    const sensorData = await sensorService.getAllLatest();
 
-    // get all sensor data
-    const latestSensorDataPromises = sensorTypes.map(async (sensorType) => {
-      return await prisma.sensorData.findFirst({
-        where: { sensorTypeId: parseInt(sensorType.id) },
-        orderBy: { timestamp: 'desc' },
-        include: { sensorType: true },
-      });
-    });
-
-    // wait till done
-    const latestSensorData = await Promise.all(latestSensorDataPromises);
-
-    const lamp = await prisma.lampLog.findFirst({
-      where: { isPJU: false },
-      orderBy: { timestamp: 'desc' },
-    });
+    // ambil data monitor
+    const lampData = await lampService.getLastLampLog();
+    const monitorData = await monitorService.getAllLatest();
 
     res.status(200).json({
       success: true,
-      message: 'Data sensor terbaru berhasil diambil',
+      message: "Data sensor terbaru berhasil diambil",
       data: {
-        sensor: latestSensorData.filter((data) => data !== null), // Menghilangkan data yang null jika ada
-        lamp: lamp,
+        sensor: sensorData.filter((data) => data !== null), // Menghilangkan data yang null jika ada
+        pju: {
+          lamp: lampData,
+          monitor: monitorData.filter((data) => data !== null),
+        },
       },
     });
   } catch (error) {
-    console.error('Error retrieving latest sensor data:', error.message);
+    console.error("Error retrieving latest sensor data:", error.message);
     res.status(500).json({
       success: false,
-      message: 'Terjadi kesalahan saat mengambil data sensor terbaru',
+      message: "Terjadi kesalahan saat mengambil data sensor terbaru",
       error: error.message,
     });
   }
