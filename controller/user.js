@@ -8,7 +8,7 @@ const secretKey = process.env.SECRET_KEY;
 
 // register user admin
 exports.RegisterUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -16,11 +16,14 @@ exports.RegisterUser = async (req, res) => {
     const user = await prisma.user.create({
       data: {
         email: email,
+        name: name,
         password: hashedPassword,
       },
     });
 
-    res.json({ message: "User registered successfully", data: user });
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.json({ message: "User registered successfully", data: userWithoutPassword });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

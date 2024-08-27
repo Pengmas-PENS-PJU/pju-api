@@ -29,7 +29,7 @@ router.get("/data/all", GetAll);
 router.post("/lamp/log", AddLampLog);
 
 router.post("/login", LoginUser);
-// router.post("/register", RegisterUser);
+router.post("/register", RegisterUser);
 
 router.get("/protected", authenticateToken, (req, res) => {
   res.send("This is a protected route");
