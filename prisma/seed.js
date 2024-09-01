@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const bcrypt = require("bcryptjs");
 
 const sensorTypes = [
   { name: 'Humidity', code: 'HUM', unit: '%' },
@@ -34,13 +35,39 @@ async function main() {
     skipDuplicates: true, // Avoid duplicating sensor types if they already exist
   });
 
+  console.log(`Created ${createdSensorTypes.count} sensor types`);
+
   const createdMonitorTypes = await prisma.monitorType.createMany({
     data: MonitorTypes,
     skipDuplicates: true, // Avoid duplicating monitor types if they already exist
   });
 
-  console.log(`Created ${createdSensorTypes.count} sensor types`);
   console.log(`Created ${createdSensorTypes.count} monitor types`);
+
+  // generate admin user
+  if (process.env.ADMIN_EMAIL != "" || process.env.ADMIN_EMAIL != null) {
+    const hashedPassword = await bcrypt.hash(process.env.ADMIN_EMAIL, 10);
+
+    const adminUser = await prisma.user.create({
+      data: {
+        email: process.env.ADMIN_EMAIL,
+        password: hashedPassword,
+      },
+    });
+
+    console.log("Created admin user kredentials from env");
+  } else {
+    const hashedPassword = await bcrypt.hash("adminMSIB", 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email: "admin@gmail.com",
+        password: hashedPassword,
+      },
+    });
+
+    console.log("Created default admin user");
+  }
 
   // // Create example SensorData
   // const exampleSensorData = [
