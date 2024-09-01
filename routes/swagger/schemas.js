@@ -31,6 +31,26 @@
  *               sensorCode: HUM
  *             - value: 27.1
  *               sensorCode: TEMP
+ *             - value: 512
+ *               sensorCode: SOLAR
+ *             - value: 2
+ *               sensorCode: RAIN
+ *             - value: 120.5
+ *               sensorCode: WATER
+ *             - value: 15
+ *               sensorCode: WINDSPD
+ *             - value: 270
+ *               sensorCode: WINDDIR
+ *             - value: 0.04
+ *               sensorCode: CO
+ *             - value: 0.02
+ *               sensorCode: NO2
+ *             - value: 0.05
+ *               sensorCode: O3
+ *             - value: 12.5
+ *               sensorCode: PM
+ *             - value: 60
+ *               sensorCode: SO2
  *         pju:
  *           type: object
  *           $ref: '#/components/schemas/PjuDataRequest'
@@ -54,6 +74,16 @@
  *             attributeCode: VOLT
  *           - value: 3
  *             attributeCode: CURR
+ *           - value: 500
+ *             attributeCode: POW
+ *           - value: 0.95
+ *             attributeCode: COSPHI
+ *           - value: 27
+ *             attributeCode: TEMP
+ *           - value: 50
+ *             attributeCode: FREQ
+ *           - value: 800
+ *             attributeCode: LUM
  *         lamp:
  *           on: true
  *           brightness: 75
