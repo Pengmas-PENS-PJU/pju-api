@@ -1,8 +1,8 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const { PrismaClient } = require("@prisma/client");
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -23,7 +23,7 @@ exports.RegisterUser = async (req, res) => {
 
     const { password: _, ...userWithoutPassword } = user;
 
-    res.json({ message: "User registered successfully", data: userWithoutPassword });
+    res.json({ message: 'User registered successfully', data: userWithoutPassword });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -41,19 +41,61 @@ exports.LoginUser = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ error: "User not found" });
+      return res.status(401).json({ error: 'User not found' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: "1h" });
-    res.json({ message: "Logged in successfully", token: token });
+    const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '1h' });
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    const data = {
+      message: 'Logged in successfully',
+      data: userWithoutPassword,
+      token: token,
+    };
+
+    res.json({ message: 'Logged in successfully', data: data });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.GetCurrentUser = async (req, res) => {
+  const token = req.headers.authorization;
+
+  // decode token
+  const decoded = jwt.verify(token, secretKey);
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: decoded.userId,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+
+    const data = {
+      message: 'Logged in user found',
+      data: user,
+    };
+
+    res.json(data);
+  } catch (error) {
+    const data = {
+      error: error.message,
+    };
+
+    res.status(500).json(data);
   }
 };

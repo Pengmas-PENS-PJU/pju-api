@@ -9,7 +9,7 @@ const {
 } = require("../controller/sensor.js");
 const { AddAll, GetAll } = require("../controller/request.js");
 const { AddLampLog } = require("../controller/lamp.js");
-const { LoginUser, RegisterUser } = require("../controller/user.js");
+const { LoginUser, RegisterUser, GetCurrentUser } = require("../controller/user.js");
 const { authenticateToken } = require("../middleware/middleware.js");
 const router = express.Router();
 
@@ -30,6 +30,7 @@ router.post("/lamp/log", AddLampLog);
 
 router.post("/login", LoginUser);
 router.post("/register", RegisterUser);
+router.get("/me", authenticateToken, GetCurrentUser);
 
 router.get("/protected", authenticateToken, (req, res) => {
   res.send("This is a protected route");
