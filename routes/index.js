@@ -9,7 +9,11 @@ const {
 } = require("../controller/sensor.js");
 const { AddAll, GetAll } = require("../controller/request.js");
 const { AddLampLog } = require("../controller/lamp.js");
-const { LoginUser, RegisterUser } = require("../controller/user.js");
+const {
+  LoginUser,
+  RegisterUser,
+  GetCurrentUser,
+} = require("../controller/user.js");
 const { authenticateToken } = require("../middleware/middleware.js");
 const router = express.Router();
 

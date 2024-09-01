@@ -1,29 +1,30 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const bcrypt = require("bcryptjs");
 
 const sensorTypes = [
-  { name: "Humidity", code: "HUM", unit: "%" },
-  { name: "Temperature", code: "TEMP", unit: "°C" },
-  { name: "Solar Radiation", code: "SOLAR", unit: "kWH/m²" },
-  { name: "Rainfall Level", code: "RAIN", unit: "mm" },
-  { name: "Water Level", code: "WATER", unit: "cm" },
-  { name: "Wind Speed", code: "WINDSPD", unit: "mph" },
-  { name: "Wind Direction", code: "WINDDIR", unit: "°" },
-  { name: "Carbon Monoxide", code: "CO", unit: "ppm" },
-  { name: "Nitrogen Dioxide", code: "NO2", unit: "ppm" },
-  { name: "Ozone", code: "O3", unit: "ppm" },
-  { name: "Particulate Matter", code: "PM", unit: "µg/m³" },
+  { name: 'Humidity', code: 'HUM', unit: '%' },
+  { name: 'Temperature', code: 'TEMP', unit: '°C' },
+  { name: 'Solar Radiation', code: 'SOLAR', unit: 'kWH/m²' },
+  { name: 'Rainfall Level', code: 'RAIN', unit: 'mm' },
+  { name: 'Water Level', code: 'WATER', unit: 'cm' },
+  { name: 'Wind Speed', code: 'WINDSPD', unit: 'mph' },
+  { name: 'Wind Direction', code: 'WINDDIR', unit: '°' },
+  { name: 'Carbon Monoxide', code: 'CO', unit: 'ppm' },
+  { name: 'Nitrogen Dioxide', code: 'NO2', unit: 'ppm' },
+  { name: 'Ozone', code: 'O3', unit: 'ppm' },
+  { name: 'Particulate Matter', code: 'PM', unit: 'µg/m³' },
+  { name: 'Sulfur Dioxide', code: 'SO2', unit: 'ppm' },
 ];
 
 const MonitorTypes = [
-  { name: "Voltage", code: "VOLT", unit: "V" },
-  { name: "Current", code: "CURR", unit: "A" },
-  { name: "Power", code: "POW", unit: "Watt" },
-  { name: "Power Factor", code: "COSPHI", unit: "PF" },
-  { name: "Temperature", code: "TEMP", unit: "°C" },
-  { name: "Frequency", code: "FREQ", unit: "Hz" },
-  { name: "Luminouse Intensity", code: "LUM", unit: "Lumen" },
+  { name: 'Voltage', code: 'VOLT', unit: 'V' },
+  { name: 'Current', code: 'CURR', unit: 'A' },
+  { name: 'Power', code: 'POW', unit: 'Watt' },
+  { name: 'Power Factor', code: 'COSPHI', unit: 'PF' },
+  { name: 'Temperature', code: 'TEMP', unit: '°C' },
+  { name: 'Frequency', code: 'FREQ', unit: 'Hz' },
+  { name: 'Luminouse Intensity', code: 'LUM', unit: 'Lumen' },
 ];
 
 async function main() {

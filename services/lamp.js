@@ -9,6 +9,7 @@ exports.addLampLog = async (lamp) => {
         on: lamp.on,
         brightness: lamp.brightness,
         isPJU: lamp.isPJU,
+        automated: lamp.automated,
       },
     });
 
