@@ -1,30 +1,30 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcryptjs");
 
 const sensorTypes = [
-  { name: 'Humidity', code: 'HUM', unit: '%' },
-  { name: 'Temperature', code: 'TEMP', unit: '°C' },
-  { name: 'Solar Radiation', code: 'SOLAR', unit: 'kWH/m²' },
-  { name: 'Rainfall Level', code: 'RAIN', unit: 'mm' },
-  { name: 'Water Level', code: 'WATER', unit: 'cm' },
-  { name: 'Wind Speed', code: 'WINDSPD', unit: 'mph' },
-  { name: 'Wind Direction', code: 'WINDDIR', unit: '°' },
-  { name: 'Carbon Monoxide', code: 'CO', unit: 'ppm' },
-  { name: 'Nitrogen Dioxide', code: 'NO2', unit: 'ppm' },
-  { name: 'Ozone', code: 'O3', unit: 'ppm' },
-  { name: 'Particulate Matter', code: 'PM', unit: 'µg/m³' },
-  { name: 'Sulfur Dioxide', code: 'SO2', unit: 'ppm' },
+  { name: "Humidity", code: "HUM", unit: "%" },
+  { name: "Temperature", code: "TEMP", unit: "°C" },
+  { name: "Solar Radiation", code: "SOLAR", unit: "kWH/m²" },
+  { name: "Rainfall Level", code: "RAIN", unit: "mm" },
+  { name: "Water Level", code: "WATER", unit: "cm" },
+  { name: "Wind Speed", code: "WINDSPD", unit: "mph" },
+  { name: "Wind Direction", code: "WINDDIR", unit: "°" },
+  { name: "Carbon Monoxide", code: "CO", unit: "ppm" },
+  { name: "Nitrogen Dioxide", code: "NO2", unit: "ppm" },
+  { name: "Ozone", code: "O3", unit: "ppm" },
+  { name: "Particulate Matter", code: "PM", unit: "µg/m³" },
+  { name: "Sulfur Dioxide", code: "SO2", unit: "ppm" },
 ];
 
 const MonitorTypes = [
-  { name: 'Voltage', code: 'VOLT', unit: 'V' },
-  { name: 'Current', code: 'CURR', unit: 'A' },
-  { name: 'Power', code: 'POW', unit: 'Watt' },
-  { name: 'Power Factor', code: 'COSPHI', unit: 'PF' },
-  { name: 'Temperature', code: 'TEMP', unit: '°C' },
-  { name: 'Frequency', code: 'FREQ', unit: 'Hz' },
-  { name: 'Luminouse Intensity', code: 'LUM', unit: 'Lumen' },
+  { name: "Voltage", code: "VOLT", unit: "V" },
+  { name: "Current", code: "CURR", unit: "A" },
+  { name: "Power", code: "POW", unit: "Watt" },
+  { name: "Power Factor", code: "COSPHI", unit: "PF" },
+  { name: "Temperature", code: "TEMP", unit: "°C" },
+  { name: "Frequency", code: "FREQ", unit: "Hz" },
+  { name: "Luminouse Intensity", code: "LUM", unit: "Lumen" },
 ];
 
 async function main() {
@@ -45,28 +45,31 @@ async function main() {
   console.log(`Created ${createdSensorTypes.count} monitor types`);
 
   // generate admin user
-  if (process.env.ADMIN_EMAIL != "" || process.env.ADMIN_EMAIL != null) {
-    const hashedPassword = await bcrypt.hash(process.env.ADMIN_EMAIL, 10);
+  const ExistAdmin = await prisma.user.findFirst();
+  if (!ExistAdmin) {
+    if (process.env.ADMIN_EMAIL != "" || process.env.ADMIN_EMAIL != null) {
+      const hashedPassword = await bcrypt.hash(process.env.ADMIN_EMAIL, 10);
 
-    const adminUser = await prisma.user.create({
-      data: {
-        email: process.env.ADMIN_EMAIL,
-        password: hashedPassword,
-      },
-    });
+      const adminUser = await prisma.user.create({
+        data: {
+          email: process.env.ADMIN_EMAIL,
+          password: hashedPassword,
+        },
+      });
 
-    console.log("Created admin user kredentials from env");
-  } else {
-    const hashedPassword = await bcrypt.hash("adminMSIB", 10);
+      console.log("Created admin user kredentials from env");
+    } else {
+      const hashedPassword = await bcrypt.hash("adminMSIB", 10);
 
-    const user = await prisma.user.create({
-      data: {
-        email: "admin@gmail.com",
-        password: hashedPassword,
-      },
-    });
+      const user = await prisma.user.create({
+        data: {
+          email: "admin@gmail.com",
+          password: hashedPassword,
+        },
+      });
 
-    console.log("Created default admin user");
+      console.log("Created default admin user");
+    }
   }
 
   // // Create example SensorData
