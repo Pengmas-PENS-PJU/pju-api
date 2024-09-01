@@ -57,7 +57,7 @@
  *         lamp:
  *           on: true
  *           brightness: 75
- *           autoMode: false
+ *           automated: false
  *           isPJU: true
  *     PjuMonitorItemRequest:
  *       type: object
@@ -80,7 +80,7 @@
  *       required:
  *         - on
  *         - brightness
- *         - autoMode
+ *         - automated
  *         - isPJU
  *       properties:
  *         on:
@@ -89,7 +89,7 @@
  *         brightness:
  *           type: number
  *           description: The brightness level of the PJU
- *         autoMode:
+ *         automated:
  *           type: boolean
  *           description: Indicates if the PJU is in automatic mode
  *         isPJU:
@@ -98,6 +98,6 @@
  *       example:
  *         on: true
  *         brightness: 75
- *         autoMode: false
+ *         automated: false
  *         isPJU: true
  */
