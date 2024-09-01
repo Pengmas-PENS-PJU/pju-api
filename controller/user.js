@@ -54,13 +54,15 @@ exports.LoginUser = async (req, res) => {
 
     const { password: _, ...userWithoutPassword } = user;
 
-    const data = {
+    const responseBody = {
       message: 'Logged in successfully',
-      data: userWithoutPassword,
-      token: token,
+      data: {
+        user: userWithoutPassword,
+        token: token,
+      },
     };
 
-    res.json({ message: 'Logged in successfully', data: data });
+    res.json(responseBody);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });

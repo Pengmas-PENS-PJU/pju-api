@@ -51,9 +51,9 @@
  *       example:
  *         monitor:
  *           - value: 6
- *             attributeCode: VOLTAGE
+ *             attributeCode: VOLT
  *           - value: 3
- *             attributeCode: CURRENT
+ *             attributeCode: CURR
  *         lamp:
  *           on: true
  *           brightness: 75
