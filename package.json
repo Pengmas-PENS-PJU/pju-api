@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": "true",
   "scripts": {
-    "start": "node index.js",
-    "startdev": "nodemon index.js",
+    "start": "node app.js",
+    "startdev": "nodemon app.js",
     "seed": "node prisma/seed.js",
     "build": "webpack",
     "prod": "node dist/final.js"
