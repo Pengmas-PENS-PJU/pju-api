@@ -6,9 +6,9 @@ var logger = require('morgan');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
-const router = require('./routes/index.js');
-const { initSocket } = require('./socket');
-const seeder = require('./prisma/seed.js');
+const router = require('../routes/index.js');
+const { initSocket } = require('../socket.js');
+const seeder = require('../prisma/seed.js');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
