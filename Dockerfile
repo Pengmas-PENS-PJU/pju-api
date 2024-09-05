@@ -10,11 +10,14 @@ COPY . .
 # Install dependencies
 RUN npm install
 
+# Build aplikasi
+RUN npm run build
+
 # Prisma migrate
-RUN npx prisma migrate
+# RUN npx prisma migrate
 
 # Run Seed: node prisma/seed.js
-RUN node prisma/seed.js
+# RUN node prisma/seed.js
 
 # Ekspos port aplikasi
 EXPOSE 5000
