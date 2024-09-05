@@ -23,5 +23,5 @@ RUN npm install
 EXPOSE 5000
 
 # Jalankan aplikasi
-# CMD ["node", "dist/final.js"]
-RUN npm run start
+CMD ["node", "app.js"]
+# RUN npm run start
