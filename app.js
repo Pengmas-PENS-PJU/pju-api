@@ -27,7 +27,7 @@ const options = {
     },
     servers: [
       {
-        url: "https://pju-api-hveq5uky7q-et.a.run.app",
+        url: "https://pju-api-production.up.railway.app",
         description: "Production server",
       },
       {
