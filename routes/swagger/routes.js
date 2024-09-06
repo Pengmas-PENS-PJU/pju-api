@@ -16,5 +16,11 @@
  *     responses:
  *       201:
  *         description: Created
+ *   get:
+ *     summary: Get the latest sensor and pju data
+ *     tags: [Sensor and PJU]
+ *     responses:
+ *       200:
+ *         description: Success
  *
  */
