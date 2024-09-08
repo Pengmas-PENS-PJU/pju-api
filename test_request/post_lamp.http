@@ -1,0 +1,10 @@
+POST http://localhost:5000/lamp HTTP/1.1
+Content-Type: application/json
+x-api-key: 03e4286fd8187cd95bb8aee272fefe094781fb84c5ae0eb4af5c1382d779909a
+
+
+{
+	"on" : true,
+	"automated" : false,
+	"isPJU": true
+}

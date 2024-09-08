@@ -27,6 +27,7 @@ model SensorData {
   id           Int        @id @default(autoincrement())
   value        Float
   timestamp    DateTime   @default(now())
+  code         String?
   sensorTypeId Int
   sensorType   SensorType @relation(fields: [sensorTypeId], references: [id])
 }
@@ -34,7 +35,6 @@ model SensorData {
 model LampLog {
   id           Int        @id @default(autoincrement()) 
   on           Boolean
-  brightness   Int
   isPJU        Boolean
   automated    Boolean
   timestamp    DateTime   @default(now())
@@ -52,6 +52,13 @@ model MonitorData {
   id           Int        @id @default(autoincrement())
   value        Float
   timestamp    DateTime   @default(now())
+  code         String?
   monitorTypeId Int
   monitorType   MonitorType @relation(fields : [monitorTypeId], references : [id])
+}
+
+model ApiKey {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  createdAt DateTime @default(now())
 }

@@ -7,7 +7,6 @@ exports.addLampLog = async (lamp) => {
     const lampLog = await prisma.lampLog.create({
       data: {
         on: lamp.on,
-        brightness: lamp.brightness,
         isPJU: lamp.isPJU,
         automated: lamp.automated,
       },
@@ -19,14 +18,12 @@ exports.addLampLog = async (lamp) => {
   }
 };
 
-exports.getLastLampLog = async () => {
+exports.getLastLampLog = async (isPJU) => {
   try {
     const lamp = await prisma.lampLog.findFirst({
-      where: { isPJU: true },
+      where: { isPJU: isPJU },
       orderBy: { timestamp: "desc" },
     });
-
-    // return Promise.all(lamp);
 
     return lamp;
   } catch (error) {
@@ -49,9 +46,28 @@ exports.isLampStatusSame = async () => {
       orderBy: { timestamp: "desc" },
     });
 
-    const isSame = pjuLampLog?.on === nonPjuLampLog?.on;
+    const isSameOn = pjuLampLog?.on === nonPjuLampLog?.on;
+    const isSameAuto = pjuLampLog?.automated === nonPjuLampLog?.automated;
 
-    return { isSame, success: true };
+    if (!isSameOn) {
+      return {
+        isSame: false,
+        success: true,
+        clientLampStatus: nonPjuLampLog,
+        config: "on",
+        value: nonPjuLampLog.automated,
+      };
+    } else if (!isSameAuto) {
+      return {
+        isSame: false,
+        success: true,
+        clientLampStatus: nonPjuLampLog,
+        config: "auto",
+        value: nonPjuLampLog.on,
+      };
+    } else {
+      return { isSame: true, success: true, clientLampStatus: nonPjuLampLog };
+    }
   } catch (error) {
     console.error("Error checking lamp status:", error.message);
     return { isSame: false, success: false, error: error.message };

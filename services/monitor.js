@@ -21,7 +21,6 @@ exports.addMonitorData = async (monitor) => {
         value: monitorItem.value,
         monitorTypeId: monitorType.id,
       },
-      include: { monitorType: true },
     });
   });
 
@@ -41,4 +40,72 @@ exports.getAllLatest = async () => {
   });
 
   return await Promise.all(latestMonitorDataPromises);
+};
+
+exports.getMonitorByFilter = async (filter) => {
+  try {
+    console.log("muulai");
+    const monitorTypes = await prisma.monitorType.findMany({
+      where: {
+        code: {
+          in: filter,
+        },
+      },
+    });
+
+    if (monitorTypes.length === 0) {
+      return [];
+    }
+
+    console.log("ambi tipe");
+
+    // get sensor by type
+    const monitorDataPromises = monitorTypes.map(async (monitorType) => {
+      return await prisma.monitorData.findFirst({
+        where: {
+          monitorTypeId: monitorType.id,
+        },
+        orderBy: {
+          timestamp: "desc",
+        },
+      });
+    });
+
+    console.log("ambi data");
+
+    const monitorDataResults = await Promise.all(monitorDataPromises);
+
+    return monitorDataResults.filter((data) => data !== null);
+  } catch (error) {
+    console.error("Error getting sensor data by filter:", error.message);
+    throw new Error("Failed to get sensor data by filter");
+  }
+};
+
+// get moniotr data by type id
+exports.getMonitorById = async (typeId, multiple = true) => {
+  if (multiple) {
+    const monitors = await prisma.monitorData.findMany({
+      where: {
+        monitorTypeId: typeId,
+      },
+      orderBy: {
+        timestamp: "desc",
+      },
+      limit: 10,
+    });
+
+    return monitors;
+  }
+
+  const monitor = await prisma.monitorData.findFirst({
+    where: {
+      monitorTypeId: typeId,
+    },
+    orderBy: {
+      timestamp: "desc",
+    },
+  });
+
+  return monitor;
 };

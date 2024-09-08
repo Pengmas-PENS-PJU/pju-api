@@ -1,0 +1,36 @@
+POST http://localhost:5000/air-quality HTTP/1.1
+Content-Type: application/json
+x-api-key: 03e4286fd8187cd95bb8aee272fefe094781fb84c5ae0eb4af5c1382d779909a
+
+{
+	"sensor": [
+		{
+			"sensorCode": "SO2",
+			"value": 32
+		},
+		{
+			"sensorCode": "CO2",
+			"value": 34.5
+		},
+		{
+			"sensorCode": "O2",
+			"value": 80.0
+		},
+		{
+			"sensorCode": "PM2.5",
+			"value": 12.3
+		},
+		{
+			"sensorCode": "PM10",
+			"value": 5.5
+		},
+		{
+			"sensorCode": "O3",
+			"value": 90.0
+		},
+		{
+			"sensorCode": "NO2",
+			"value": 90.0
+		}
+	]
+}

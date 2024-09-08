@@ -8,7 +8,9 @@ const dotenv = require("dotenv");
 const http = require("http");
 const router = require("./routes/index.js");
 const { initSocket } = require("./socket");
-const seeder = require("./prisma/seed.js");
+const crypto = require("crypto");
+const key = require("./services/key.js");
+// const seeder = require("./prisma/seed.js");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
@@ -16,6 +18,9 @@ const swaggerUi = require("swagger-ui-express");
 dotenv.config();
 const port = process.env.PORT || 5000;
 const app = express();
+
+// generate api key
+key.generateKey();
 
 // Swagger API Docs Setup Start
 const options = {

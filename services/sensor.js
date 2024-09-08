@@ -19,7 +19,6 @@ exports.addSensorData = async (sensor) => {
         value: sensorItem.value,
         sensorTypeId: sensorType.id,
       },
-      include: { sensorType: true },
     });
   });
 
@@ -57,4 +56,40 @@ exports.createSensorType = async (sensorCode, unit, description) => {
       description: description,
     },
   });
+};
+
+// get sensor by filter
+exports.getSensorByFilter = async (filter) => {
+  try {
+    const sensorTypes = await prisma.sensorType.findMany({
+      where: {
+        code: {
+          in: filter,
+        },
+      },
+    });
+
+    if (sensorTypes.length === 0) {
+      return [];
+    }
+
+    // get sensor by type
+    const sensorDataPromises = sensorTypes.map(async (sensorType) => {
+      return await prisma.sensorData.findFirst({
+        where: {
+          sensorTypeId: sensorType.id,
+        },
+        orderBy: {
+          timestamp: "desc",
+        },
+      });
+    });
+
+    const sensorDataResults = await Promise.all(sensorDataPromises);
+
+    return sensorDataResults.filter((data) => data !== null);
+  } catch (error) {
+    console.error("Error getting sensor data by filter:", error.message);
+    throw new Error("Failed to get sensor data by filter");
+  }
 };

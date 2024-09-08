@@ -1,0 +1,29 @@
+POST http://localhost:5000/monitor HTTP/1.1
+Content-Type: application/json
+x-api-key: 03e4286fd8187cd95bb8aee272fefe094781fb84c5ae0eb4af5c1382d779909a
+
+
+{
+	"monitor": [
+		{
+			"attributeCode": "VOLT",
+			"value": 12
+		},
+		{
+			"attributeCode": "CURR",
+			"value": 3
+		},
+		{
+			"attributeCode": "POW",
+			"value": 3
+		},
+		{
+			"attributeCode": "TEMP",
+			"value": 40
+		},
+		{
+			"attributeCode": "LUM",
+			"value": 90
+		}
+	]
+}

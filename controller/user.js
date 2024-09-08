@@ -1,8 +1,9 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const { PrismaClient } = require('@prisma/client');
+const express = require("express");
+const bcrypt = require("bcryptjs");
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+const { generateKey } = require("../services/key.js");
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -23,7 +24,10 @@ exports.RegisterUser = async (req, res) => {
 
     const { password: _, ...userWithoutPassword } = user;
 
-    res.json({ message: 'User registered successfully', data: userWithoutPassword });
+    res.json({
+      message: "User registered successfully",
+      data: userWithoutPassword,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -41,21 +45,21 @@ exports.LoginUser = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ error: 'User not found' });
+      return res.status(401).json({ error: "User not found" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: "1h" });
 
     const { password: _, ...userWithoutPassword } = user;
 
     const responseBody = {
-      message: 'Logged in successfully',
+      message: "Logged in successfully",
       data: {
         user: userWithoutPassword,
         token: token,
@@ -88,7 +92,7 @@ exports.GetCurrentUser = async (req, res) => {
     });
 
     const data = {
-      message: 'Logged in user found',
+      message: "Logged in user found",
       data: user,
     };
 
@@ -99,5 +103,26 @@ exports.GetCurrentUser = async (req, res) => {
     };
 
     res.status(500).json(data);
+  }
+};
+
+exports.getApiKey = async (req, res) => {
+  try {
+    const apiKey = await generateKey();
+
+    return res.status(200).json({
+      success: true,
+      message: "Berhasil mengambil api key",
+      data: {
+        apiKey: apiKey,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      success: false,
+      message: "Terjadi kesalahan saat mengambil data",
+      error: error.message,
+    });
   }
 };
