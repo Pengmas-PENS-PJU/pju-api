@@ -14,8 +14,9 @@ RUN npm install
 RUN npm run build
 
 # Prisma migrate
-# RUN npx prisma migrate reset
-# RUN npx prisma migrate deploy
+RUN npx prisma generate
+RUN npx prisma migrate reset
+RUN npx prisma migrate deploy
 
 # Run Seed: node prisma/seed.js
 RUN node prisma/seed.js
