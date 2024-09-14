@@ -20,6 +20,7 @@ exports.addMonitorData = async (monitor) => {
       data: {
         value: monitorItem.value,
         monitorTypeId: monitorType.id,
+        code: monitorItem.attributeCode,
       },
     });
   });

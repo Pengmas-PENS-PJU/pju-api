@@ -1,18 +1,18 @@
-var express = require("express");
-var createError = require("http-errors");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const http = require("http");
-const router = require("./routes/index.js");
-const { initSocket } = require("./socket");
-const crypto = require("crypto");
-const key = require("./services/key.js");
+var express = require('express');
+var createError = require('http-errors');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const http = require('http');
+const router = require('./routes/index.js');
+const { initSocket } = require('./socket');
+const crypto = require('crypto');
+const key = require('./services/key.js');
 // const seeder = require("./prisma/seed.js");
-const swaggerJsdoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 // config
 dotenv.config();
@@ -25,40 +25,56 @@ key.generateKey();
 // Swagger API Docs Setup Start
 const options = {
   definition: {
-    openapi: "3.1.0",
+    openapi: '3.1.0',
     info: {
-      title: "Smart PJU Monitoring API Documentation",
-      version: "1.0.0",
+      title: 'Smart PJU Monitoring API Documentation',
+      version: '1.0.0',
     },
     servers: [
       {
-        url: "https://pju-api-production.up.railway.app",
-        description: "Production server",
+        url: 'https://pju-api-production.up.railway.app',
+        description: 'Production server',
       },
       {
-        url: "http://localhost:5000",
-        description: "Development server",
+        url: 'http://localhost:5000',
+        description: 'Development server',
       },
     ],
+    components: {
+      securitySchemes: {
+        ApiKeyAuth: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'x-api-key',
+          description: 'API key to authorize requests',
+        },
+        AuthorizationTokenAuth: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'authorization',
+          description: 'Token to authorize requests',
+        },
+      },
+    },
   },
-  apis: ["./routes/**/*.js"],
+  apis: ['./routes/**/*.js'],
 };
 
 const specs = swaggerJsdoc(options);
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 // Swagger API Docs Setup End
 
 // alamat diizinkan cors
 app.use(
   cors({
     credentials: true,
-    origin: process.env.CORS_ORIGIN.split(","),
+    origin: process.env.CORS_ORIGIN.split(','),
   })
 );
 
 // package
-app.use(logger("dev"));
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

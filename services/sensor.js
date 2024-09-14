@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // tambah semua sensor data
@@ -9,15 +9,14 @@ exports.addSensorData = async (sensor) => {
     });
 
     if (!sensorType) {
-      throw new Error(
-        `Sensor type with code ${sensorItem.sensorCode} not found`
-      );
+      throw new Error(`Sensor type with code ${sensorItem.sensorCode} not found`);
     }
 
     return await prisma.sensorData.create({
       data: {
         value: sensorItem.value,
         sensorTypeId: sensorType.id,
+        code: sensorItem.sensorCode,
       },
     });
   });
@@ -32,7 +31,7 @@ exports.getAllLatest = async () => {
   const latestSensorDataPromises = sensorTypes.map(async (sensorType) => {
     return await prisma.sensorData.findFirst({
       where: { sensorTypeId: parseInt(sensorType.id) },
-      orderBy: { timestamp: "desc" },
+      orderBy: { timestamp: 'desc' },
       include: { sensorType: true },
     });
   });
@@ -80,7 +79,7 @@ exports.getSensorByFilter = async (filter) => {
           sensorTypeId: sensorType.id,
         },
         orderBy: {
-          timestamp: "desc",
+          timestamp: 'desc',
         },
       });
     });
@@ -89,7 +88,7 @@ exports.getSensorByFilter = async (filter) => {
 
     return sensorDataResults.filter((data) => data !== null);
   } catch (error) {
-    console.error("Error getting sensor data by filter:", error.message);
-    throw new Error("Failed to get sensor data by filter");
+    console.error('Error getting sensor data by filter:', error.message);
+    throw new Error('Failed to get sensor data by filter');
   }
 };
