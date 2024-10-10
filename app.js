@@ -11,7 +11,7 @@ const { initSocket } = require("./socket");
 const crypto = require("crypto");
 const key = require("./services/key.js");
 // const seeder = require("./prisma/seed.js");
-const { startDeleteScheduler } = require("./job/job.js");
+// const { startDeleteScheduler } = require("./job/job.js");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
@@ -24,7 +24,7 @@ const app = express();
 key.generateKey();
 
 // start scheduler
-startDeleteScheduler();
+// startDeleteScheduler();
 
 // Swagger API Docs Setup Start
 const options = {
