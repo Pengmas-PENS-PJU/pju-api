@@ -1,16 +1,32 @@
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.SECRET_KEY;
 const { decrypt, getKey } = require("../services/key.js");
+const { verifyCookie } = require("../services/jwt.js");
 
+// USER auth
 const authenticateToken = (req, res, next) => {
-  const token = req.headers["authorization"];
-  if (!token) return res.status(401).json({ message: "Token is required" });
+  const authHeader = req.headers["authorization"];
+  if (!authHeader) {
+    return res
+      .status(401)
+      .json({ message: "Authorization header is required" });
+  }
 
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) return res.status(403).json({ message: "Invalid token" });
-    req.user = user;
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : authHeader;
+
+  if (!token) {
+    return res.status(401).json({ message: "Token is required" });
+  }
+
+  const { loggedIn, _ } = verifyCookie(token);
+
+  if (!loggedIn) {
+    return res.status(403).json({ message: "Invalid token" });
+  } else {
     next();
-  });
+  }
 };
 
 // validate api key
