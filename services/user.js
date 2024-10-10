@@ -59,7 +59,7 @@ exports.getAllUsers = async () => {
 };
 
 // Update user
-exports.updateUser = async (user_id, data) => {
+exports.updateUserById = async (user_id, data) => {
   // Hash new password if provided
   if (data.password) {
     data.password = await bcrypt.hash(data.password, 10);
@@ -80,7 +80,7 @@ exports.updateUser = async (user_id, data) => {
 };
 
 // Delete user
-exports.deleteUser = async (user_id) => {
+exports.deleteUserById = async (user_id) => {
   const deletedUser = await prisma.user.delete({
     where: { id: user_id },
   });
