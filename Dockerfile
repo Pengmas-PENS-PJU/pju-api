@@ -11,7 +11,7 @@ COPY . .
 RUN npm install
 
 # Build aplikasi
-RUN npm run build
+# RUN npm run build
 
 # Prisma migrate
 # RUN npx prisma generate
@@ -26,5 +26,5 @@ RUN npm run build
 EXPOSE 5000
 
 # Jalankan aplikasi
-CMD ["node", "./dist/final.js"]
+CMD ["node", "./app.js"]
 # RUN npm run start
