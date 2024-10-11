@@ -36,6 +36,8 @@ model SensorData {
   code         String?
   sensorTypeId Int
   sensorType   SensorType @relation(fields: [sensorTypeId], references: [id])
+  pju_id Int?
+  pju Pju? @relation(fields: [pju_id], references: [id])
 }
 
 model LampLog {
@@ -61,6 +63,32 @@ model MonitorData {
   code         String?
   monitorTypeId Int
   monitorType   MonitorType @relation(fields : [monitorTypeId], references : [id])
+  pju_id Int?
+  pju Pju? @relation(fields: [pju_id], references: [id])
+}
+
+model Pju {
+  id      Int @id @default(autoincrement())
+  name String
+  description String
+  address String?
+  lat String?
+  longtitude String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  config config[]
+  monitorData MonitorData[]
+  sensorData SensorData[]
+}
+
+model config {
+  id Int @id @default(autoincrement())
+  name String
+  value String?
+  pju_id Int
+
+  pju   Pju   @relation(fields: [pju_id], references: [id])
 }
 
 model ApiKey {
