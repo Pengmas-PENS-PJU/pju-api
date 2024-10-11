@@ -37,6 +37,10 @@ const {
   validateKey,
 } = require("../middleware/middleware.js");
 
+// Stream
+const Ffmpeg = require("fluent-ffmpeg");
+const MjpegServer = require("mjpeg-server");
+
 const router = express.Router();
 
 // router.post("/data", AddDataSensor);
@@ -81,6 +85,28 @@ router.get("/api-key", authenticateToken, getApiKey);
 
 router.get("/protected", authenticateToken, (req, res) => {
   res.send("This is a protected route");
+});
+
+// Route untuk RTSP stream
+router.get('/cctv-stream', (req, res) => {
+  const rtspUrl = process.env.RTSP_URL;
+
+  if (!rtspUrl) {
+      return res.status(400).send("RTSP URL is required");
+  }
+
+  const ffmpeg = new Ffmpeg(rtspUrl)
+      .inputOptions('-rtsp_transport tcp')
+      .noAudio()
+      .videoCodec('mjpeg')
+      .format('mjpeg')
+      .on('error', (err) => {
+          console.error(`Error: ${err.message}`);
+          res.status(500).send("Stream error");
+      });
+
+  const mjpegReqHandler = new MjpegServer(req, res);
+  ffmpeg.pipe(mjpegReqHandler);
 });
 
 module.exports = router;
