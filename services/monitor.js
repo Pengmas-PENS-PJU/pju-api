@@ -1,8 +1,8 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // tambah semua data monitor
-exports.addMonitorData = async (monitor) => {
+exports.addMonitorData = async (monitor, pjuId) => {
   const monitorPromises = monitor.map(async (monitorItem) => {
     const monitorType = await prisma.monitorType.findUnique({
       where: {
@@ -11,9 +11,7 @@ exports.addMonitorData = async (monitor) => {
     });
 
     if (!monitorType) {
-      throw new Error(
-        `monitor type with code ${monitorItem.attributeCode} not found`
-      );
+      throw new Error(`monitor type with code ${monitorItem.attributeCode} not found`);
     }
 
     return await prisma.monitorData.create({
@@ -21,6 +19,7 @@ exports.addMonitorData = async (monitor) => {
         value: monitorItem.value,
         monitorTypeId: monitorType.id,
         code: monitorItem.attributeCode,
+        pju_id: pjuId,
       },
     });
   });
@@ -35,7 +34,7 @@ exports.getAllLatest = async () => {
   const latestMonitorDataPromises = monitorTypes.map(async (monitorType) => {
     return await prisma.monitorData.findFirst({
       where: { monitorTypeId: parseInt(monitorType.id) },
-      orderBy: { timestamp: "desc" },
+      orderBy: { timestamp: 'desc' },
       include: { monitorType: true },
     });
   });
@@ -45,7 +44,7 @@ exports.getAllLatest = async () => {
 
 exports.getMonitorByFilter = async (filter) => {
   try {
-    console.log("muulai");
+    console.log('muulai');
     const monitorTypes = await prisma.monitorType.findMany({
       where: {
         code: {
@@ -58,7 +57,7 @@ exports.getMonitorByFilter = async (filter) => {
       return [];
     }
 
-    console.log("ambi tipe");
+    console.log('ambi tipe');
 
     // get sensor by type
     const monitorDataPromises = monitorTypes.map(async (monitorType) => {
@@ -67,19 +66,19 @@ exports.getMonitorByFilter = async (filter) => {
           monitorTypeId: monitorType.id,
         },
         orderBy: {
-          timestamp: "desc",
+          timestamp: 'desc',
         },
       });
     });
 
-    console.log("ambi data");
+    console.log('ambi data');
 
     const monitorDataResults = await Promise.all(monitorDataPromises);
 
     return monitorDataResults.filter((data) => data !== null);
   } catch (error) {
-    console.error("Error getting sensor data by filter:", error.message);
-    throw new Error("Failed to get sensor data by filter");
+    console.error('Error getting sensor data by filter:', error.message);
+    throw new Error('Failed to get sensor data by filter');
   }
 };
 
@@ -91,7 +90,7 @@ exports.getMonitorById = async (typeId, multiple = true) => {
         monitorTypeId: typeId,
       },
       orderBy: {
-        timestamp: "desc",
+        timestamp: 'desc',
       },
       limit: 10,
     });
@@ -104,7 +103,7 @@ exports.getMonitorById = async (typeId, multiple = true) => {
       monitorTypeId: typeId,
     },
     orderBy: {
-      timestamp: "desc",
+      timestamp: 'desc',
     },
   });
 

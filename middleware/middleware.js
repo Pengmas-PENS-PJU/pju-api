@@ -1,29 +1,25 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY;
-const { decrypt, getKey } = require("../services/key.js");
-const { verifyCookie } = require("../services/jwt.js");
+const { decrypt, getKey } = require('../services/key.js');
+const { verifyCookie } = require('../services/jwt.js');
 
 // USER auth
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
+  const authHeader = req.headers['authorization'];
   if (!authHeader) {
-    return res
-      .status(401)
-      .json({ message: "Authorization header is required" });
+    return res.status(401).json({ message: 'Authorization header is required' });
   }
 
-  const token = authHeader.startsWith("Bearer ")
-    ? authHeader.split(" ")[1]
-    : authHeader;
+  const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : authHeader;
 
   if (!token) {
-    return res.status(401).json({ message: "Token is required" });
+    return res.status(401).json({ message: 'Token is required' });
   }
 
   const { loggedIn, _ } = verifyCookie(token);
 
   if (!loggedIn) {
-    return res.status(403).json({ message: "Invalid token" });
+    return res.status(403).json({ message: 'Invalid token' });
   } else {
     next();
   }
@@ -31,20 +27,22 @@ const authenticateToken = (req, res, next) => {
 
 // validate api key
 const validateKey = async (req, res, next) => {
-  const keyFromClient = req.headers["x-api-key"];
+  const keyFromClient = req.headers['x-api-key'];
 
   if (!keyFromClient) {
-    return res.status(401).json({ message: "API key is required" });
+    return res.status(401).json({ message: 'API key is required' });
   }
 
-  const apiKey = await getKey();
+  const apiKey = (await getKey()); 
+  console.log('API key from client:', keyFromClient);
+  console.log('API key from database:', apiKey);
+
   if (!apiKey) {
-    return res.status(404).json({ message: "API key not found" });
+    return res.status(404).json({ message: 'API key not found' });
   }
 
-  const decryptedKey = decrypt(apiKey);
-  if (keyFromClient !== decryptedKey) {
-    return res.status(403).json({ message: "Invalid API key" });
+  if (keyFromClient !== decrypt(apiKey)) {
+    return res.status(403).json({ message: 'Invalid API key' });
   }
 
   next();

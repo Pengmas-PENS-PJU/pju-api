@@ -6,25 +6,32 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  
 }
 
-enum Role {
-  ADMIN
-  OPERATOR
+model Role {
+  id   Int     @id @default(autoincrement())
+  code String  @unique @db.VarChar(20)
+  name String  @db.VarChar(255)
+
+  users User[]
 }
+
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  name     String?
-  password String
-  role     Role?
+  id         Int     @id @default(autoincrement())
+  username   String  @unique @db.VarChar(255)
+  email      String  @unique @db.VarChar(255)
+  password   String  @db.VarChar(255)
+  role_code  String  @db.VarChar(20)
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
+
+  role       Role    @relation(fields: [role_code], references: [code])
 }
 
 model SensorType {
   id         Int        @id @default(autoincrement())
-  name       String      @unique
-  code       String      @unique
+  name       String     @unique
+  code       String     @unique
   unit       String
   sensorData SensorData[]
 }
@@ -36,59 +43,57 @@ model SensorData {
   code         String?
   sensorTypeId Int
   sensorType   SensorType @relation(fields: [sensorTypeId], references: [id])
-  pju_id Int?
-  pju Pju? @relation(fields: [pju_id], references: [id])
+  pju_id       Int?
+  pju          Pju?       @relation(fields: [pju_id], references: [id])
 }
 
 model LampLog {
-  id           Int        @id @default(autoincrement()) 
-  on           Boolean
-  isPJU        Boolean
-  automated    Boolean
-  timestamp    DateTime   @default(now())
+  id        Int      @id @default(autoincrement()) 
+  on        Boolean
+  isPJU     Boolean
+  automated Boolean
+  timestamp DateTime @default(now())
 }
 
 model MonitorType {
-  id            Int       @id @default(autoincrement())
-  name          String    @unique
-  code          String    @unique
-  unit          String    @unique
-  monitorData   MonitorData[]
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  code        String      @unique
+  unit        String      @unique
+  monitorData MonitorData[]
 }
 
 model MonitorData {
-  id           Int        @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   value        Float
-  timestamp    DateTime   @default(now())
+  timestamp    DateTime    @default(now())
   code         String?
   monitorTypeId Int
-  monitorType   MonitorType @relation(fields : [monitorTypeId], references : [id])
-  pju_id Int?
-  pju Pju? @relation(fields: [pju_id], references: [id])
+  monitorType   MonitorType @relation(fields: [monitorTypeId], references: [id])
+  pju_id       Int?
+  pju          Pju?        @relation(fields: [pju_id], references: [id])
 }
 
 model Pju {
-  id      Int @id @default(autoincrement())
-  name String
+  id          Int          @id @default(autoincrement())
+  name        String
   description String
-  address String?
-  lat String?
-  longtitude String?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-
-  config config[]
+  address     String?
+  lat         String?
+  longtitude  String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  config      Config[]
   monitorData MonitorData[]
-  sensorData SensorData[]
+  sensorData  SensorData[]
 }
 
-model config {
-  id Int @id @default(autoincrement())
-  name String
-  value String?
+model Config {
+  id     Int    @id @default(autoincrement())
+  name   String
+  value  String?
   pju_id Int
-
-  pju   Pju   @relation(fields: [pju_id], references: [id])
+  pju    Pju    @relation(fields: [pju_id], references: [id])
 }
 
 model ApiKey {
@@ -97,34 +102,43 @@ model ApiKey {
   createdAt DateTime @default(now())
 }
 
-// schema bot
 enum Sender {
   USER
   BOT
 }
+
 model Document {
   id         String   @id @default(uuid()) @db.Uuid
   title      String   @db.VarChar(120)
-  file       Bytes
+  path       String   @db.VarChar(120) 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([title])
+  @@index([path]) 
+  @@map("documents")
 }
 
-model Conversations {
+
+model Conversation {
   id         String    @id @default(uuid()) @db.Uuid
   userId     String    @db.VarChar(120)
   title      String    @db.VarChar(120)
-  messages   Messages[]
+  messages   Message[]
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+
+  @@map("conversations")
 }
 
-model Messages {
+model Message {
   id             String        @id @default(uuid()) @db.Uuid
   conversationId String        @db.Uuid
-  conversation   Conversations @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   message        String
   sender         Sender
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+
+  @@map("messages")
 }

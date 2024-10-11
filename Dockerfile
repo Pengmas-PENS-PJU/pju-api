@@ -16,11 +16,11 @@ RUN npm run build
 # Prisma migrate
 # RUN npx prisma generate
 # RUN npx prisma migrate reset
-RUN npx prisma migrate deploy
-RUN npx prisma generate --sql
+# RUN npx prisma migrate deploy
+# RUN npx prisma generate --sql
 
 # Run Seed: node prisma/seed.js
-RUN node prisma/seed.js
+# RUN node prisma/seed.js
 
 # Ekspos port aplikasi
 EXPOSE 5000
