@@ -1,30 +1,42 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY;
+const refreshTokenSecretKey = process.env.REFRESH_TOKEN_SECRET_KEY;
 
 // create session
-const createCookie = (userId, name, email, role) => {
-  if (userId === undefined || role === undefined) {
-    throw new Error("userId and role must be specified");
+const createAccessToken = (userId, username, name, email, roleCode) => {
+  if (userId === undefined || roleCode === undefined) {
+    throw new Error('userId and role_code must be specified');
   }
 
   try {
-    const token = jwt.sign(
-      { user_id: userId, name: name, email: email, role: role },
-      secretKey,
-      { expiresIn: "1h" }
-    );
+    const accessToken = jwt.sign({ user_id: userId, username: username, name: name, email: email, role: roleCode }, secretKey, { expiresIn: '1h' });
 
-    return token;
+    return accessToken;
   } catch (error) {
-    console.error("Cannot create user session", error.message);
-    throw new Error("Cannot create user session", error.message);
+    console.error('Cannot create user session', error.message);
+    throw new Error('Cannot create user session', error.message);
+  }
+};
+
+const createRefreshToken = (userId, username, name, email, roleCode) => {
+  if (userId === undefined || roleCode === undefined) {
+    throw new Error('userId and role_code must be specified');
+  }
+
+  try {
+    const refreshToken = jwt.sign({ user_id: userId, username: username, name: name, email: email, role: roleCode }, refreshTokenSecretKey, { expiresIn: '7d' });
+
+    return refreshToken;
+  } catch (error) {
+    console.error('Cannot create user session', error.message);
+    throw new Error('Cannot create user session', error.message);
   }
 };
 
 // decrypt session
 const verifyCookie = (token) => {
   if (token === undefined) {
-    throw new Error("token must be specified");
+    throw new Error('token must be specified');
   }
 
   try {
@@ -43,21 +55,22 @@ const verifyCookie = (token) => {
 };
 
 const getDataUser = (req) => {
-  const header = req.headers["authorization"];
+  const header = req.headers['authorization'];
 
   try {
-    const token = header.startsWith("Bearer ") ? header.split(" ")[1] : header;
+    const token = header.startsWith('Bearer ') ? header.split(' ')[1] : header;
 
     const decoded = jwt.verify(token, secretKey);
     return decoded;
   } catch (error) {
-    console.error("Cannot decode user session", error.message);
-    throw new Error("Cannot decode user session", error.message);
+    console.error('Cannot decode user session', error.message);
+    throw new Error('Cannot decode user session', error.message);
   }
 
   return null;
 };
 
-exports.createCookie = createCookie;
+exports.createAccessToken = createAccessToken;
+exports.createRefreshToken = createRefreshToken;
 exports.verifyCookie = verifyCookie;
 exports.getDataUser = getDataUser;

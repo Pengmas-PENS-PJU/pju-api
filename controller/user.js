@@ -1,18 +1,11 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const { PrismaClient } = require("@prisma/client");
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const jwt = require("jsonwebtoken");
-const { generateKey } = require("../services/key.js");
-const { createCookie, getDataUser } = require("../services/jwt.js");
-const {
-  insertUser,
-  getUserById,
-  getUserByEmail,
-  getAllUsers,
-  updateUserById,
-  deleteUserById,
-} = require("../services/user.js");
+const jwt = require('jsonwebtoken');
+const { generateKey } = require('../services/key.js');
+const { createAccessToken, createRefreshToken, getDataUser } = require('../services/jwt.js');
+const { insertUser, getUserById, getUserByEmail, getAllUsers, updateUserById, deleteUserById } = require('../services/user.js');
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -34,7 +27,7 @@ exports.RegisterUser = async (req, res) => {
     const { password: _, ...userWithoutPassword } = user;
 
     res.json({
-      message: "User registered successfully",
+      message: 'User registered successfully',
       data: userWithoutPassword,
     });
   } catch (error) {
@@ -44,34 +37,55 @@ exports.RegisterUser = async (req, res) => {
 
 // login user admin
 exports.LoginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { username_email, password } = req.body;
+  console.log('username_email', username_email);
+  console.log('password', password);
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
-        email: email,
+        OR: [
+          {
+            email: username_email,
+          },
+          {
+            username: username_email,
+          },
+        ],
       },
     });
 
     if (!user) {
-      return res.status(401).json({ error: "User not found" });
+      return res.status(401).json({ error: `User with username or email ${username_email} not registered.` });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: 'Wrong password' });
     }
 
-    const token = createCookie(user.id, user.name, user.email, user.role);
+    const accessToken = createAccessToken(user.id, user.username, user.name, user.email, user.role_code);
+    const refreshToken = createRefreshToken(user.id, user.username, user.name, user.email, user.role_code);
+
+    await prisma.refreshToken.create({
+      data: {
+        refresh_token: refreshToken,
+        user_id: user.id,
+      },
+    });
 
     const { password: _, ...userWithoutPassword } = user;
 
     const responseBody = {
-      message: "Logged in successfully",
+      message: 'Logged in successfully',
       data: {
         user: userWithoutPassword,
-        token: token,
+        token: {
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          type: 'Bearer',
+        },
       },
     };
 
@@ -101,7 +115,7 @@ exports.GetCurrentUser = async (req, res) => {
     });
 
     const data = {
-      message: "Logged in user found",
+      message: 'Logged in user found',
       data: user,
     };
 
@@ -121,7 +135,7 @@ exports.getApiKey = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Berhasil mengambil api key",
+      message: 'Berhasil mengambil api key',
       data: {
         apiKey: apiKey,
       },
@@ -130,7 +144,7 @@ exports.getApiKey = async (req, res) => {
     console.log(error);
     return res.status(200).json({
       success: false,
-      message: "Terjadi kesalahan saat mengambil data",
+      message: 'Terjadi kesalahan saat mengambil data',
       error: error.message,
     });
   }
@@ -145,16 +159,16 @@ exports.GetUser = async (req, res) => {
   if (user_id == null) {
     return res.status(403).json({
       success: false,
-      message: "user_id not specified",
+      message: 'user_id not specified',
       data: dataUser,
     });
   }
 
   try {
-    if (dataUser.role != "ADMIN" && user_id != dataUser.user_id) {
+    if (dataUser.role != 'ADMIN' && user_id != dataUser.user_id) {
       return res.status(400).json({
         success: false,
-        message: "You dont have permission to access this user",
+        message: 'You dont have permission to access this user',
         data: {},
       });
     }
@@ -163,14 +177,14 @@ exports.GetUser = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Berhasil mengambil data",
+      message: 'Berhasil mengambil data',
       data: result,
     });
   } catch (error) {
-    console.error("Error getting data:", error.message);
+    console.error('Error getting data:', error.message);
     res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan saat mengambil data",
+      message: 'Terjadi kesalahan saat mengambil data',
       error: error.message,
       data: {},
     });
