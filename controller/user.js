@@ -100,23 +100,19 @@ exports.GetCurrentUser = async (req, res) => {
   const token = req.headers.authorization;
 
   // decode token
-  const decoded = jwt.verify(token, secretKey);
 
   try {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: decoded.userId,
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-      },
-    });
+    const decoded = jwt.verify(token, secretKey);
 
     const data = {
       message: 'Logged in user found',
-      data: user,
+      data: {
+        id: decoded.user_id,
+        username: decoded.username,
+        name: decoded.name,
+        email: decoded.email,
+        role_code: decoded.role,
+      },
     };
 
     res.json(data);
