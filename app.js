@@ -14,6 +14,7 @@ const key = require('./services/key.js');
 // const { startDeleteScheduler } = require("./job/job.js");
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const errorHandler = require('./middleware/errorHandler.js');
 
 // config
 dotenv.config();
@@ -53,15 +54,15 @@ const options = {
           description: 'API key to authorize requests',
         },
         AccessTokenAuth: {
-          type: 'http', 
-          scheme: 'bearer', 
-          bearerFormat: 'JWT', 
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
           description: 'JWT Access Token to authorize requests',
         },
         RefreshTokenAuth: {
-          type: 'http', 
-          scheme: 'bearer', 
-          bearerFormat: 'JWT', 
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
           description: 'JWT Refresh Token to authorize requests',
         },
       },
@@ -91,6 +92,8 @@ app.use(cookieParser());
 
 // path router
 app.use(router);
+
+app.use(errorHandler);
 
 // buat server HTTP
 const server = http.createServer(app);
