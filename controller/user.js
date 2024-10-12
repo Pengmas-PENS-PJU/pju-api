@@ -126,7 +126,8 @@ exports.LogoutUser = async (req, res) => {
 };
 
 exports.GetCurrentUser = async (req, res) => {
-  const token = req.headers.authorization;
+  const authHeader = req.headers.authorization;
+  const token = authHeader.split(' ')[1];
 
   try {
     const decoded = jwt.verify(token, secretKey);
