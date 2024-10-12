@@ -71,6 +71,7 @@ exports.LoginUser = async (req, res) => {
     await prisma.refreshToken.create({
       data: {
         refresh_token: refreshToken,
+        access_token: accessToken,
         user_id: user.id,
       },
     });
@@ -92,6 +93,35 @@ exports.LoginUser = async (req, res) => {
     res.json(responseBody);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.LogoutUser = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const accessToken = authHeader.split(' ')[1];
+
+    const refreshTokenDB = await prisma.refreshToken.findFirst({
+      where: {
+        access_token: accessToken,
+      },
+    });
+
+    if (!refreshTokenDB) {
+      return res.status(403).json({ message: 'Refresh Token with the given Access Token not found in database' });
+    }
+
+    await prisma.refreshToken.delete({
+      where: {
+        access_token: accessToken,
+      },
+    });
+
+    res.json({
+      message: 'Logged out successfully',
+    });
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };

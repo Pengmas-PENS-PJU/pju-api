@@ -5,7 +5,7 @@ const { AddAirQualityData, GetAirQualityData } = require('../controller/airQuali
 const { AddMonitorData, GetMonitorData } = require('../controller/monitor.js');
 const { AddAll, GetAll } = require('../controller/request.js');
 const { AddLampLog, saveLampLog, getLastLampStatus } = require('../controller/lamp.js');
-const { LoginUser, RegisterUser, GetCurrentUser, getApiKey, GetAllUser, UpdateUser, DeleteUser, GetUser, RefreshToken } = require('../controller/user.js');
+const { LoginUser, RegisterUser, GetCurrentUser, getApiKey, GetAllUser, UpdateUser, DeleteUser, GetUser, RefreshToken, LogoutUser } = require('../controller/user.js');
 const { authenticateToken, validateKey } = require('../middleware/middleware.js');
 const { loginValidation } = require('../validate/auth/loginValidation.js');
 
@@ -48,6 +48,7 @@ router.get('/lamp/:isPJU', getLastLampStatus);
 router.get('/me', authenticateToken, GetCurrentUser);
 router.post('/login', loginValidation, LoginUser);
 router.post('/refresh-token', refreshTokenMiddleware, RefreshToken);
+router.post('/logout', authenticateToken, LogoutUser);
 
 router.post('/register', authenticateToken, RegisterUser);
 router.get('/user/list', authenticateToken, GetAllUser);
