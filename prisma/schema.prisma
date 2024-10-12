@@ -34,10 +34,14 @@ model User {
 model RefreshToken {
   id            Int      @id @default(autoincrement())
   user_id       Int
-  refresh_token String   @db.Text
+  access_token  String?  @db.Text @unique
+  refresh_token String   @db.Text @unique
   created_at    DateTime @default(now()) @db.Timestamp(6)
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([access_token], type: Hash)
+  @@index([refresh_token], type: Hash)
 }
 
 model SensorType {

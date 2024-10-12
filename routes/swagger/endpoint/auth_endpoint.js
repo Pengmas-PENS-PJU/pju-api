@@ -27,6 +27,16 @@
  *     responses:
  *       200:
  *         description: Success
+ * 
+ * /logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Auth]
+ *     security:
+ *       - AccessTokenAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
  *
  * /register:
  *   post:
