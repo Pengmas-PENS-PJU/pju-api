@@ -5,13 +5,14 @@ const { AddAirQualityData, GetAirQualityData } = require('../controller/airQuali
 const { AddMonitorData, GetMonitorData } = require('../controller/monitor.js');
 const { AddAll, GetAll } = require('../controller/request.js');
 const { AddLampLog, saveLampLog, getLastLampStatus } = require('../controller/lamp.js');
-const { LoginUser, RegisterUser, GetCurrentUser, getApiKey, GetAllUser, UpdateUser, DeleteUser, GetUser } = require('../controller/user.js');
+const { LoginUser, RegisterUser, GetCurrentUser, getApiKey, GetAllUser, UpdateUser, DeleteUser, GetUser, RefreshToken } = require('../controller/user.js');
 const { authenticateToken, validateKey } = require('../middleware/middleware.js');
 const { loginValidation } = require('../validate/auth/loginValidation.js');
 
 // Stream
 const Ffmpeg = require('fluent-ffmpeg');
 const MjpegServer = require('mjpeg-server');
+const refreshTokenMiddleware = require('../middleware/refreshTokenMiddleware.js');
 
 const router = express.Router();
 
@@ -46,7 +47,8 @@ router.get('/lamp/:isPJU', getLastLampStatus);
 // user
 router.get('/me', authenticateToken, GetCurrentUser);
 router.post('/login', loginValidation, LoginUser);
-// router.post('/login', LoginUser);
+router.post('/refresh-token', refreshTokenMiddleware, RefreshToken);
+
 router.post('/register', authenticateToken, RegisterUser);
 router.get('/user/list', authenticateToken, GetAllUser);
 router.get('/user/:userId', authenticateToken, GetUser);

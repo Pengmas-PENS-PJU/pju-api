@@ -33,6 +33,29 @@ const createRefreshToken = (userId, username, name, email, roleCode) => {
   }
 };
 
+const refreshAccessToken = (refreshToken) => {
+  if (refreshToken === undefined) {
+    throw new Error('refreshToken must be specified');
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, refreshTokenSecretKey);
+
+    user_id = decoded.user_id;
+    username = decoded.username;
+    name = decoded.name;
+    email = decoded.email;
+    role_code = decoded.role;
+
+    const accessToken = createAccessToken(user_id, username, name, email, role_code);
+
+    return accessToken;
+  } catch (error) {
+    console.error('Cannot refresh user session', error.message);
+    throw new Error('Cannot refresh user session', error.message);
+  }
+};
+
 // decrypt session
 const verifyCookie = (token) => {
   if (token === undefined) {
@@ -74,3 +97,4 @@ exports.createAccessToken = createAccessToken;
 exports.createRefreshToken = createRefreshToken;
 exports.verifyCookie = verifyCookie;
 exports.getDataUser = getDataUser;
+exports.refreshAccessToken = refreshAccessToken;

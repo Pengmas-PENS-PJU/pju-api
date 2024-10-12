@@ -5,12 +5,15 @@ const { verifyCookie } = require('../services/jwt.js');
 
 // USER auth
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
+  const authHeader = req.headers.authorization;
   if (!authHeader) {
     return res.status(401).json({ message: 'Authorization header is required' });
   }
 
-  const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : authHeader;
+  if (!authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Authorization token must be type Bearer' });
+  }
+  const token = authHeader.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ message: 'Token is required' });
@@ -33,7 +36,7 @@ const validateKey = async (req, res, next) => {
     return res.status(401).json({ message: 'API key is required' });
   }
 
-  const apiKey = (await getKey()); 
+  const apiKey = await getKey();
   console.log('API key from client:', keyFromClient);
   console.log('API key from database:', apiKey);
 
