@@ -5,16 +5,16 @@
  *     LoginRequest:
  *       type: object
  *       required:
- *         - email
+ *         - username_email
  *         - password
  *       properties:
- *         email:
+ *         username_email:
  *           type: string
- *           description: The user's email
+ *           description: The user's username or email
  *         password:
  *           type: string
  *           description: The user's password
  *       example:
- *         email: "youremail@gmail.com"
+ *         username_email: "yourusername123"
  *         password: "yourpassword"
  */

@@ -18,12 +18,22 @@
  *       200:
  *         description: Success
  *
+ * /refresh-token:
+ *   post:
+ *     summary: Refresh Token
+ *     tags: [Auth]
+ *     security:
+ *       - RefreshTokenAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
+ *
  * /register:
  *   post:
  *     summary: Register user
  *     tags: [Auth]
  *     security:
- *       - AuthorizationTokenAuth: []
+ *       - AccessTokenAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -33,13 +43,13 @@
  *     responses:
  *       200:
  *         description: Success
- * 
+ *
  * /me:
  *   get:
  *     summary: Get current user
  *     tags: [Auth]
  *     security:
- *       - AuthorizationTokenAuth: []
+ *       - AccessTokenAuth: []
  *     responses:
  *       200:
  *         description: Success

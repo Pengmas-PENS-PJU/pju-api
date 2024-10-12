@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const jwt = require('jsonwebtoken');
 const { generateKey } = require('../services/key.js');
-const { createAccessToken, createRefreshToken, getDataUser } = require('../services/jwt.js');
+const { createAccessToken, createRefreshToken, getDataUser, refreshAccessToken } = require('../services/jwt.js');
 const { insertUser, getUserById, getUserByEmail, getAllUsers, updateUserById, deleteUserById } = require('../services/user.js');
 
 const secretKey = process.env.SECRET_KEY;
@@ -122,6 +122,26 @@ exports.GetCurrentUser = async (req, res) => {
     };
 
     res.status(500).json(data);
+  }
+};
+
+exports.RefreshToken = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    const refreshToken = authHeader.split(' ')[1];
+
+    const accessToken = refreshAccessToken(refreshToken);
+
+    res.json({
+      message: 'Access token refreshed successfully',
+      data: {
+        access_token: accessToken,
+        type: 'Bearer',
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
