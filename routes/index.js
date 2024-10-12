@@ -17,6 +17,9 @@ const roleMiddleware = require('../middleware/roleMiddleware.js');
 const { createUserValidation } = require('../validate/user/createUserValidation.js');
 const { createUserController, getUserByIdController, updateUserController, deleteUserController, getUserListController } = require('../controller/userManagementController.js');
 const { updateUserValidation } = require('../validate/user/updateUserValidation.js');
+const { getProfileController, updateProfileController, deleteProfileController, updatePasswordController } = require('../controller/profileController.js');
+const { updateProfileValidation } = require('../validate/profile/updateProfileValidation.js');
+const { updatePasswordValidation } = require('../validate/profile/updatePasswordValidation.js');
 
 const router = express.Router();
 
@@ -60,12 +63,13 @@ router.get('/user/:userId', authenticateToken, roleMiddleware('admin'), getUserB
 router.patch('/user/:userId/update', authenticateToken, roleMiddleware('admin'), updateUserValidation, updateUserController);
 router.delete('/user/:userId/delete', authenticateToken, roleMiddleware('admin'), deleteUserController);
 
+router.get('/profile', authenticateToken, getProfileController);
+router.patch('/profile/update', authenticateToken, updateProfileValidation, updateProfileController);
+router.delete('/profile/delete', authenticateToken, deleteProfileController);
+router.patch('/profile/update-password', authenticateToken, updatePasswordValidation, updatePasswordController);
+
 // get api key
 router.get('/api-key', authenticateToken, getApiKey);
-
-router.get('/protected', authenticateToken, (req, res) => {
-  res.send('This is a protected route');
-});
 
 // Route untuk RTSP stream
 router.get('/cctv-stream', (req, res) => {

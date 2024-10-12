@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const prisma = require('../configs/prisma');
 const CustomError = require('../utils/customError');
+const { convertTimeZone } = require('../utils/convertTimeZone');
 
 const createUser = async (req) => {
   const { username, email, name, password, role_code } = req.body;
@@ -55,15 +56,16 @@ const getUserById = async (userId) => {
     throw new CustomError('User not found', 404);
   }
 
+  user.created_at = convertTimeZone(user.created_at);
+  user.updated_at = convertTimeZone(user.updated_at);
+
   const { password: _, ...userWithoutPassword } = user;
   return userWithoutPassword;
 };
 
 const updateUser = async (req) => {
   const { userId } = req.params;
-  const { username, email, name, role_code, password, confirm_password } = req.body;
-
-  console.log('confirm_password', confirm_password);
+  const { username, email, name, role_code, password } = req.body;
 
   const user = await prisma.user.findUnique({
     where: { id: parseInt(userId, 10) },
@@ -139,11 +141,14 @@ const getUserList = async () => {
   });
 
   const usersWithoutPassword = users.map((user) => {
+    user.created_at = convertTimeZone(user.created_at);
+    user.updated_at = convertTimeZone(user.updated_at);
+
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
   });
 
   return usersWithoutPassword;
-}
+};
 
 module.exports = { createUser, getUserById, updateUser, deleteUser, getUserList };
