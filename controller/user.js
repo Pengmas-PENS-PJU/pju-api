@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 const jwt = require('jsonwebtoken');
 const { generateKey } = require('../services/key.js');
 const { createAccessToken, createRefreshToken, getDataUser, refreshAccessToken } = require('../services/jwt.js');
-const { insertUser, getUserById, getUserByEmail, getAllUsers, updateUserById, deleteUserById } = require('../services/user.js');
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -129,8 +128,6 @@ exports.LogoutUser = async (req, res) => {
 exports.GetCurrentUser = async (req, res) => {
   const token = req.headers.authorization;
 
-  // decode token
-
   try {
     const decoded = jwt.verify(token, secretKey);
 
@@ -195,48 +192,3 @@ exports.getApiKey = async (req, res) => {
     });
   }
 };
-
-exports.GetAllUser = async (req, res) => {};
-
-exports.GetUser = async (req, res) => {
-  const user_id = parseInt(req.params.userId, 10);
-  const dataUser = getDataUser(req);
-
-  if (user_id == null) {
-    return res.status(403).json({
-      success: false,
-      message: 'user_id not specified',
-      data: dataUser,
-    });
-  }
-
-  try {
-    if (dataUser.role != 'ADMIN' && user_id != dataUser.user_id) {
-      return res.status(400).json({
-        success: false,
-        message: 'You dont have permission to access this user',
-        data: {},
-      });
-    }
-
-    const result = await getUserById(user_id);
-
-    return res.status(200).json({
-      success: true,
-      message: 'Berhasil mengambil data',
-      data: result,
-    });
-  } catch (error) {
-    console.error('Error getting data:', error.message);
-    res.status(500).json({
-      success: false,
-      message: 'Terjadi kesalahan saat mengambil data',
-      error: error.message,
-      data: {},
-    });
-  }
-};
-
-exports.UpdateUser = async (req, res) => {};
-
-exports.DeleteUser = async (req, res) => {};

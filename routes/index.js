@@ -5,7 +5,7 @@ const { AddAirQualityData, GetAirQualityData } = require('../controller/airQuali
 const { AddMonitorData, GetMonitorData } = require('../controller/monitor.js');
 const { AddAll, GetAll } = require('../controller/request.js');
 const { AddLampLog, saveLampLog, getLastLampStatus } = require('../controller/lamp.js');
-const { LoginUser, RegisterUser, GetCurrentUser, getApiKey, GetAllUser, UpdateUser, DeleteUser, GetUser, RefreshToken, LogoutUser } = require('../controller/user.js');
+const { LoginUser, GetCurrentUser, getApiKey, RefreshToken, LogoutUser } = require('../controller/user.js');
 const { authenticateToken, validateKey } = require('../middleware/middleware.js');
 const { loginValidation } = require('../validate/auth/loginValidation.js');
 
@@ -13,6 +13,10 @@ const { loginValidation } = require('../validate/auth/loginValidation.js');
 const Ffmpeg = require('fluent-ffmpeg');
 const MjpegServer = require('mjpeg-server');
 const refreshTokenMiddleware = require('../middleware/refreshTokenMiddleware.js');
+const roleMiddleware = require('../middleware/roleMiddleware.js');
+const { createUserValidation } = require('../validate/user/createUserValidation.js');
+const { createUserController, getUserByIdController, updateUserController, deleteUserController, getUserListController } = require('../controller/userManagementController.js');
+const { updateUserValidation } = require('../validate/user/updateUserValidation.js');
 
 const router = express.Router();
 
@@ -50,11 +54,11 @@ router.post('/login', loginValidation, LoginUser);
 router.post('/refresh-token', refreshTokenMiddleware, RefreshToken);
 router.post('/logout', authenticateToken, LogoutUser);
 
-router.post('/register', authenticateToken, RegisterUser);
-router.get('/user/list', authenticateToken, GetAllUser);
-router.get('/user/:userId', authenticateToken, GetUser);
-router.put('/user/:userId', authenticateToken, UpdateUser);
-router.delete('/user/:userId', authenticateToken, DeleteUser);
+router.post('/user/create', authenticateToken, roleMiddleware('admin'), createUserValidation, createUserController);
+router.get('/user', authenticateToken, roleMiddleware('admin'), getUserListController);
+router.get('/user/:userId', authenticateToken, roleMiddleware('admin'), getUserByIdController);
+router.patch('/user/:userId/update', authenticateToken, roleMiddleware('admin'), updateUserValidation, updateUserController);
+router.delete('/user/:userId/delete', authenticateToken, roleMiddleware('admin'), deleteUserController);
 
 // get api key
 router.get('/api-key', authenticateToken, getApiKey);
