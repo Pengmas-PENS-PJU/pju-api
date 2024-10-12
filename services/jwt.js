@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
+const CustomError = require('../utils/customError');
 const secretKey = process.env.SECRET_KEY;
 const refreshTokenSecretKey = process.env.REFRESH_TOKEN_SECRET_KEY;
+const prisma = require('../configs/prisma');
 
 // create session
 const createAccessToken = (userId, username, name, email, roleCode) => {
@@ -33,7 +35,7 @@ const createRefreshToken = (userId, username, name, email, roleCode) => {
   }
 };
 
-const refreshAccessToken = (refreshToken) => {
+const refreshAccessToken = async (refreshToken) => {
   if (refreshToken === undefined) {
     throw new Error('refreshToken must be specified');
   }
@@ -49,10 +51,19 @@ const refreshAccessToken = (refreshToken) => {
 
     const accessToken = createAccessToken(user_id, username, name, email, role_code);
 
+    await prisma.refreshToken.update({
+      where: {
+        refresh_token: refreshToken,
+      },
+      data: {
+        access_token: accessToken,
+      },
+    });
+
     return accessToken;
   } catch (error) {
-    console.error('Cannot refresh user session', error.message);
-    throw new Error('Cannot refresh user session', error.message);
+    console.error('Cannot refresh user token', error.message);
+    throw new CustomError(error.message, 500);
   }
 };
 

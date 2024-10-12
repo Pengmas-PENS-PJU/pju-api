@@ -158,7 +158,7 @@ exports.RefreshToken = async (req, res) => {
 
     const refreshToken = authHeader.split(' ')[1];
 
-    const accessToken = refreshAccessToken(refreshToken);
+    const accessToken = await refreshAccessToken(refreshToken);
 
     res.json({
       message: 'Access token refreshed successfully',
