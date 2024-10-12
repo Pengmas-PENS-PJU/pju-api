@@ -3,11 +3,13 @@ const router = express.Router();
 const { getIo } = require("../socket");
 const monitorService = require("../services/monitor.js");
 const { validateMonitorPayload } = require("../validate/validate.js");
+const pjuService = require("../services/pjuService.js");
+const configService = require("../services/configService.js");
 
 const allowedMonitorCodes = ["VOLT", "CURR", "POW", "TEMP", "LUM"];
 
 exports.AddMonitorData = async (req, res) => {
-  const { monitor } = req.body;
+  const { monitor, pju_id } = req.body;
 
   try {
     const validation = validateMonitorPayload(monitor, allowedMonitorCodes);
@@ -19,6 +21,14 @@ exports.AddMonitorData = async (req, res) => {
         data: {},
       });
     }
+
+    // set pju
+    let ValidPjuId = pjuService.setPjuDefault(pju_id);
+
+    await pjuService.getPjuById(ValidPjuId);
+
+    // check config
+    await configService.checkDataSentConfig(ValidPjuId, "monitor");
 
     if (monitor) {
       result = await monitorService.addMonitorData(monitor, 1);
