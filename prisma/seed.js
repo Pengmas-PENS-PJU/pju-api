@@ -68,6 +68,14 @@ const PjuConfigs = [
   },
 ];
 
+// system confit =
+const system_conf = [
+  {
+    name: "Delete-Cycle",
+    value: "5000",
+  },
+];
+
 async function main() {
   console.log(process.env.DATABASE_URL);
   // Insert SensorType data
@@ -134,6 +142,13 @@ async function main() {
     skipDuplicates: true,
   });
   console.log(`Created configs: ${createdPjuConfigs.count} pju configs`);
+
+  // generate syste configs
+  const systemConfigs = await prisma.config.createMany({
+    data: system_conf,
+    skipDuplicates: true,
+  });
+  console.log(`Created system configs: ${systemConfigs.count} system configs`);
 }
 
 main()
