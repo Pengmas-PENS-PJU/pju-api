@@ -3,12 +3,14 @@ const router = express.Router();
 const { getIo } = require("../socket");
 const sensorService = require("../services/sensor.js");
 const { validateSensorPayload } = require("../validate/validate.js");
+const pjuService = require("../services/pjuService.js");
+const configService = require("../services/configService.js");
 
 const allowedSensorCodes = ["CO2", "O2", "NO2", "O3", "PM2.5", "PM10", "SO2"];
 
 // add data
 exports.AddAirQualityData = async (req, res) => {
-  const { sensor } = req.body;
+  const { sensor, pju_id } = req.body;
 
   try {
     const validation = validateSensorPayload(sensor, allowedSensorCodes);
@@ -21,8 +23,16 @@ exports.AddAirQualityData = async (req, res) => {
       });
     }
 
+    // set pju
+    let ValidPjuId = pjuService.setPjuDefault(pju_id);
+
+    await pjuService.getPjuById(ValidPjuId);
+
+    // check config
+    await configService.checkDataSentConfig(ValidPjuId, "air_quality");
+
     if (sensor) {
-      result = await sensorService.addSensorData(sensor);
+      result = await sensorService.addSensorData(sensor, ValidPjuId);
     } else {
       return res.status(400).json({
         success: false,
@@ -44,7 +54,7 @@ exports.AddAirQualityData = async (req, res) => {
     });
   } catch (error) {
     console.error("Error saving data:", error.message);
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: "Terjadi kesalahan saat menyimpan data",
       error: error.message,
@@ -67,7 +77,7 @@ exports.GetAirQualityData = async (req, res) => {
     });
   } catch (error) {
     console.error("Error getting monitor data:", error.message);
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       message: "Terjadi kesalahan saat mengambil data",
       error: error.message,

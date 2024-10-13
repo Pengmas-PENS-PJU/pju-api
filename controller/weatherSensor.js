@@ -3,6 +3,8 @@ const router = express.Router();
 const { getIo } = require("../socket");
 const sensorService = require("../services/sensor.js");
 const { validateSensorPayload } = require("../validate/validate.js");
+const pjuService = require("../services/pjuService.js");
+const configService = require("../services/configService.js");
 
 const allowedSensorCodes = [
   "HUM",
@@ -16,7 +18,7 @@ const allowedSensorCodes = [
 
 // post data
 exports.AddWeatherData = async (req, res) => {
-  const { sensor } = req.body;
+  const { sensor, pju_id } = req.body;
 
   try {
     const validation = validateSensorPayload(sensor, allowedSensorCodes);
@@ -29,8 +31,16 @@ exports.AddWeatherData = async (req, res) => {
       });
     }
 
+    // set pju
+    let ValidPjuId = pjuService.setPjuDefault(pju_id);
+
+    await pjuService.getPjuById(ValidPjuId);
+
+    // check config
+    await configService.checkDataSentConfig(ValidPjuId, "weather");
+
     if (sensor) {
-      result = await sensorService.addSensorData(sensor);
+      result = await sensorService.addSensorData(sensor, pju_id);
     } else {
       return res.status(400).json({
         success: false,
