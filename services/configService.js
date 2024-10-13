@@ -16,10 +16,19 @@ const getConfigById = async (id) => {
   const config = await prisma.config.findFirst({ id: id });
 
   if (!config) {
-    throw new CustomError("Pju doesnt exist", 400);
+    throw new CustomError("Config doesn' exist", 400);
   }
 
   return config;
+};
+
+// get config by name
+const getConfigByName = async (name) => {
+  const config = await prisma.config.findFirst({ name: name });
+
+  if (!config) {
+    throw new CustomError("Config doesn' exist", 400);
+  }
 };
 
 // check specific pju config

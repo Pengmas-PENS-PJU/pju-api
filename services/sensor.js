@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { calculateHourlyAverages } = require("../utils/calculate");
 
 // tambah semua sensor data
 exports.addSensorData = async (sensor, pju_id = null) => {
@@ -94,4 +95,22 @@ exports.getSensorByFilter = async (filter) => {
     console.error("Error getting sensor data by filter:", error.message);
     throw new Error("Failed to get sensor data by filter");
   }
+};
+
+exports.getHourlySensorData = async (sensorCode, startDate, endDate, pjuId) => {
+  const sensorData = await prisma.sensorData.findMany({
+    where: {
+      code: sensorCode,
+      timestamp: {
+        gte: startDate,
+        lt: endDate,
+      },
+      pju_id: pjuId,
+    },
+    orderBy: {
+      timestamp: "asc",
+    },
+  });
+
+  return calculateHourlyAverages(sensorData);
 };

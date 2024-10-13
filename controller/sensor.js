@@ -2,6 +2,26 @@ const express = require("express");
 const { getIo } = require("../socket");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const sensor = require("../services/sensor");
+const pjuService = require("../services/pjuService.js");
+const configService = require("../services/configService.js");
+
+const allowedSensorCodes = [
+  "CO2",
+  "O2",
+  "NO2",
+  "O3",
+  "PM2.5",
+  "PM10",
+  "SO2",
+  "HUM",
+  "TEMP",
+  "SOLAR",
+  "RAINFL",
+  "PRESS",
+  "WINDSPD",
+  "WINDDIR",
+];
 
 // tambah data sensor
 exports.AddDataSensor = async (req, res) => {
@@ -94,5 +114,64 @@ exports.GetSensorTypes = async (req, res) => {
     res.json(sensorTypes);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+// get data sensor hourly
+exports.GetSensorDataHourly = async (req, res) => {
+  // const sensorCode = req.params.userId;
+  // const date = req.params.date;
+  // const pju_id = req.params.pjuId;
+
+  const sensorCode = req.query.sensorCode;
+  const date = req.query.date;
+  const pju_id = parseInt(req.query.pjuId, 10);
+
+  try {
+    // check sensor code
+    if (!allowedSensorCodes.includes(sensorCode)) {
+      return res.status(400).json({
+        success: false,
+        message: "Sensor code " + sensorCode + " is not allowed",
+        data: {},
+      });
+    }
+
+    // check date
+    if (typeof date == "undefined" || date == null) {
+      return res.status(400).json({
+        success: false,
+        message: "Date is required",
+        data: {},
+      });
+    }
+
+    const startDate = new Date(date);
+    const endDate = new Date(date);
+    endDate.setDate(startDate.getDate() + 1);
+
+    // check if pju exist
+    await pjuService.getPjuById(pju_id);
+
+    const result = await sensor.getHourlySensorData(
+      sensorCode,
+      startDate,
+      endDate,
+      pju_id
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Berhasl mengambil data",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error getting data:", error.message);
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: "Terjadi kesalahan mengambil data",
+      error: error.message,
+      data: {},
+    });
   }
 };
