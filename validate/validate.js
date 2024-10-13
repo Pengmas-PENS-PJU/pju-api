@@ -76,6 +76,8 @@ const validateMonitorPayload = (sensor, allowedMonitorCodes) => {
 
 // validate lamplog
 const validateLampLogPayload = (lamp) => {
+  console.log("automated", lamp.automated);
+
   if (!lamp) {
     return {
       valid: false,

@@ -31,7 +31,7 @@ exports.AddMonitorData = async (req, res) => {
     await configService.checkDataSentConfig(ValidPjuId, "monitor");
 
     if (monitor) {
-      result = await monitorService.addMonitorData(monitor, 1);
+      result = await monitorService.addMonitorData(monitor, ValidPjuId);
     } else {
       return res.status(400).json({
         success: false,

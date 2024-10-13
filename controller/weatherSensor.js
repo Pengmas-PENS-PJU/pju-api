@@ -40,7 +40,7 @@ exports.AddWeatherData = async (req, res) => {
     await configService.checkDataSentConfig(ValidPjuId, "weather");
 
     if (sensor) {
-      result = await sensorService.addSensorData(sensor, pju_id);
+      result = await sensorService.addSensorData(sensor, ValidPjuId);
     } else {
       return res.status(400).json({
         success: false,

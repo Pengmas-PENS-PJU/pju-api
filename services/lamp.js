@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // add lamp log
@@ -22,7 +22,7 @@ exports.getLastLampLog = async (isPJU) => {
   try {
     const lamp = await prisma.lampLog.findFirst({
       where: { isPJU: isPJU },
-      orderBy: { timestamp: "desc" },
+      orderBy: { timestamp: 'desc' },
     });
 
     return lamp;
@@ -37,13 +37,13 @@ exports.isLampStatusSame = async () => {
     // Check status dari PJU
     const pjuLampLog = await prisma.lampLog.findFirst({
       where: { isPJU: true },
-      orderBy: { timestamp: "desc" },
+      orderBy: { timestamp: 'desc' },
     });
 
     // Check status dari non-PJU (client)
     const nonPjuLampLog = await prisma.lampLog.findFirst({
       where: { isPJU: false },
-      orderBy: { timestamp: "desc" },
+      orderBy: { timestamp: 'desc' },
     });
 
     const isSameOn = pjuLampLog?.on === nonPjuLampLog?.on;
@@ -54,22 +54,22 @@ exports.isLampStatusSame = async () => {
         isSame: false,
         success: true,
         clientLampStatus: nonPjuLampLog,
-        config: "on",
-        value: nonPjuLampLog.automated,
+        config: 'on',
+        value: nonPjuLampLog?.automated,
       };
     } else if (!isSameAuto) {
       return {
         isSame: false,
         success: true,
         clientLampStatus: nonPjuLampLog,
-        config: "auto",
+        config: 'auto',
         value: nonPjuLampLog.on,
       };
     } else {
       return { isSame: true, success: true, clientLampStatus: nonPjuLampLog };
     }
   } catch (error) {
-    console.error("Error checking lamp status:", error.message);
+    console.error('Error checking lamp status:', error.message);
     return { isSame: false, success: false, error: error.message };
   }
 };

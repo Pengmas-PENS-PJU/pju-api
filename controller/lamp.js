@@ -12,6 +12,7 @@ const lampService = require("../services/lamp.js");
 // Add Lamp Data
 exports.saveLampLog = async (req, res) => {
   const { on, automated, isPJU } = req.body;
+  console.log(req.body);
 
   try {
     const lamp = {
