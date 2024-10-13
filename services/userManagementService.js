@@ -138,6 +138,9 @@ const getUserList = async () => {
     include: {
       role: true,
     },
+    orderBy: {
+      updated_at: 'desc',
+    },
   });
 
   const usersWithoutPassword = users.map((user) => {
