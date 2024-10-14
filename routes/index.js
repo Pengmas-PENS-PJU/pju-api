@@ -91,7 +91,7 @@ router.get("/air-quality", GetAirQualityData);
 router.post("/air-quality", validateKey, AddAirQualityData);
 
 // monitor only
-router.get("/monitor", GetMonitorData);
+router.get("/monitor/:pjuId", GetMonitorData);
 router.post("/monitor", validateKey, AddMonitorData);
 
 // lamp only

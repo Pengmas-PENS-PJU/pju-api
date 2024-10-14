@@ -42,7 +42,7 @@ exports.getAllLatest = async () => {
   return await Promise.all(latestMonitorDataPromises);
 };
 
-exports.getMonitorByFilter = async (filter) => {
+exports.getMonitorByFilter = async (filter, pjuId) => {
   try {
     console.log('muulai');
     const monitorTypes = await prisma.monitorType.findMany({
@@ -63,6 +63,7 @@ exports.getMonitorByFilter = async (filter) => {
     const monitorDataPromises = monitorTypes.map(async (monitorType) => {
       return await prisma.monitorData.findFirst({
         where: {
+          pju_id: pjuId,
           monitorTypeId: monitorType.id,
         },
         orderBy: {

@@ -19,10 +19,18 @@
  *     responses:
  *       201:
  *         description: Created
- *
+ * 
+ * /monitor/{pjuId}:
  *   get:
  *     summary: Get the latest PJU Monitor data
  *     tags: [PjuMonitor]
+ *     parameters:
+ *       - in: path
+ *         name: pjuId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: PJU ID to filter the data
  *     responses:
  *       200:
  *         description: Success
