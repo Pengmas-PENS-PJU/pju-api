@@ -27,7 +27,7 @@
  *       200:
  *         description: Success
  *   
- * /air-quality/{pjuId}/conclusion:
+ * /air-quality/{pjuId}/ispu:
  *   get:
  *     summary: Get Air Quality conclusion in one day
  *     tags: [AirQuality]

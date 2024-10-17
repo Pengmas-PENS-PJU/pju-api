@@ -1,7 +1,7 @@
 const express = require('express');
 const { GetDataSensor, AddDataSensor, GetSensorTypes, AddSensorType, GetDataSensorByType, GetLatestSensorDataByType, GetSensorDataHourly } = require('../controller/sensor.js');
 const { AddWeatherData, GetWeatherData } = require('../controller/weatherSensor.js');
-const { AddAirQualityData, GetAirQualityData, GetAirQualityConclusion } = require('../controller/airQualitySensor.js');
+const { AddAirQualityData, GetAirQualityData, GetAirQualityISPU } = require('../controller/airQualitySensor.js');
 const { AddMonitorData, GetMonitorData } = require('../controller/monitor.js');
 const { AddAll, GetAll } = require('../controller/request.js');
 const { AddLampLog, saveLampLog, getLastLampStatus } = require('../controller/lamp.js');
@@ -43,7 +43,7 @@ router.post('/weather', validateKey, AddWeatherData);
 // air quality only
 router.get('/air-quality', GetAirQualityData);
 router.post('/air-quality', validateKey, AddAirQualityData);
-router.get('/air-quality/:pjuId/conclusion', GetAirQualityConclusion);
+router.get('/air-quality/:pjuId/ispu', GetAirQualityISPU);
 
 // monitor only
 router.get('/monitor/:pjuId', GetMonitorData);

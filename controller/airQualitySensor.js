@@ -5,7 +5,7 @@ const sensorService = require('../services/sensor.js');
 const { validateSensorPayload } = require('../validate/validate.js');
 const pjuService = require('../services/pjuService.js');
 const configService = require('../services/configService.js');
-const { getAirQualityConclusion } = require('../services/airQualityService.js');
+const { getAirQualityISPU } = require('../services/airQualityService.js');
 
 const allowedSensorCodes = ['CO2', 'O2', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2'];
 
@@ -85,12 +85,12 @@ exports.GetAirQualityData = async (req, res) => {
   }
 };
 
-exports.GetAirQualityConclusion = async (req, res) => {
+exports.GetAirQualityISPU = async (req, res) => {
   const { pjuId } = req.params;
   const pjuIdInt = parseInt(pjuId);
 
   try {
-    const data = await getAirQualityConclusion(pjuIdInt);
+    const data = await getAirQualityISPU(pjuIdInt);
 
     return res.status(200).json({
       success: true,

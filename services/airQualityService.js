@@ -5,7 +5,7 @@ const PM25Conversion = require('../utils/ispu/ispuPM25');
 const SO2Conversion = require('../utils/ispu/ispuSO2');
 const O3Conversion = require('../utils/ispu/O3');
 
-const getAirQualityConclusion = async (pjuId) => {
+const getAirQualityISPU = async (pjuId) => {
   const PM25Average = await getAverageValueOneDayBySensorCode(pjuId, 'PM2.5');
   const PM10Average = await getAverageValueOneDayBySensorCode(pjuId, 'PM10');
   const O3Average = await getAverageValueOneDayBySensorCode(pjuId, 'O3');
@@ -94,5 +94,5 @@ const getISPUCategory = (ispu) => {
 };
 
 module.exports = {
-  getAirQualityConclusion,
+  getAirQualityISPU,
 };
