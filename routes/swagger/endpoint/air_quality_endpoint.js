@@ -26,4 +26,19 @@
  *     responses:
  *       200:
  *         description: Success
+ *   
+ * /air-quality/{pjuId}/conclusion:
+ *   get:
+ *     summary: Get Air Quality conclusion in one day
+ *     tags: [AirQuality]
+ *     parameters:
+ *       - in: path
+ *         name: pjuId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: PJU ID to filter the data
+ *     responses:
+ *       200:
+ *         description: Success
  */
