@@ -5,6 +5,8 @@ const PM25Conversion = require('../utils/ispu/ispuPM25');
 const SO2Conversion = require('../utils/ispu/ispuSO2');
 const O3Conversion = require('../utils/ispu/O3');
 
+let dataExists = false;
+
 const getAirQualityISPU = async (pjuId) => {
   const PM25Average = await getAverageValueOneDayBySensorCode(pjuId, 'PM2.5');
   const PM10Average = await getAverageValueOneDayBySensorCode(pjuId, 'PM10');
@@ -30,6 +32,7 @@ const getAirQualityISPU = async (pjuId) => {
   return {
     ispu_value: averageAllISPU,
     ispu_category: ispuCategory,
+    data_exists: dataExists,
   };
 };
 
@@ -44,6 +47,12 @@ const getAverageValueOneDayBySensorCode = async (pjuId, sensorCode) => {
       },
     },
   });
+
+  if (sensorData.length === 0) {
+    dataExists = false;
+  } else {
+    dataExists = true;
+  }
 
   return calculateAverages(sensorData);
 };
