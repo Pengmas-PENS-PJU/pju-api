@@ -1,6 +1,7 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { calculateHourlyAverages } = require("../utils/calculate");
+const { calculateHourlyAverages } = require('../utils/calculate');
+const { convertTimeZone } = require('../utils/convertTimeZone');
 
 // tambah semua sensor data
 exports.addSensorData = async (sensor, pju_id = null) => {
@@ -10,9 +11,7 @@ exports.addSensorData = async (sensor, pju_id = null) => {
     });
 
     if (!sensorType) {
-      throw new Error(
-        `Sensor type with code ${sensorItem.sensorCode} not found`
-      );
+      throw new Error(`Sensor type with code ${sensorItem.sensorCode} not found`);
     }
 
     return await prisma.sensorData.create({
@@ -35,7 +34,7 @@ exports.getAllLatest = async () => {
   const latestSensorDataPromises = sensorTypes.map(async (sensorType) => {
     return await prisma.sensorData.findFirst({
       where: { sensorTypeId: parseInt(sensorType.id) },
-      orderBy: { timestamp: "desc" },
+      orderBy: { timestamp: 'desc' },
       include: { sensorType: true },
     });
   });
@@ -83,7 +82,7 @@ exports.getSensorByFilter = async (filter) => {
           sensorTypeId: sensorType.id,
         },
         orderBy: {
-          timestamp: "desc",
+          timestamp: 'desc',
         },
       });
     });
@@ -92,8 +91,8 @@ exports.getSensorByFilter = async (filter) => {
 
     return sensorDataResults.filter((data) => data !== null);
   } catch (error) {
-    console.error("Error getting sensor data by filter:", error.message);
-    throw new Error("Failed to get sensor data by filter");
+    console.error('Error getting sensor data by filter:', error.message);
+    throw new Error('Failed to get sensor data by filter');
   }
 };
 
@@ -108,9 +107,15 @@ exports.getHourlySensorData = async (sensorCode, startDate, endDate, pjuId) => {
       pju_id: pjuId,
     },
     orderBy: {
-      timestamp: "asc",
+      timestamp: 'asc',
     },
   });
 
-  return calculateHourlyAverages(sensorData);
+  const formattedSensorData = sensorData.map((data) => {
+    data.timestamp = convertTimeZone(data.timestamp);
+
+    return data;
+  });
+
+  return calculateHourlyAverages(formattedSensorData);
 };
