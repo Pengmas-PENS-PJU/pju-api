@@ -15,12 +15,11 @@ exports.calculateHourlyAverages = (data) => {
   // calculate every index
   const hourlyAverages = Object.keys(hourlyData).map((hour) => {
     const values = hourlyData[hour];
-    const average =
-      values.reduce((sum, value) => sum + parseFloat(value), 0) / values.length;
+    const average = values.reduce((sum, value) => sum + parseFloat(value), 0) / values.length;
 
     return {
       hour: parseInt(hour),
-      averageValue: average,
+      averageValue: parseFloat(average.toFixed(1)),
     };
   });
 

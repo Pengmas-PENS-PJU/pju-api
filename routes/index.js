@@ -54,7 +54,7 @@ router.post('/lamp', validateKey, saveLampLog);
 router.get('/lamp/:isPJU', getLastLampStatus);
 
 // data all sensor
-router.get('/sensor/hourly', authenticateToken, GetSensorDataHourly);
+router.get('/sensor/hourly', GetSensorDataHourly);
 // params example ("/sensor/hourly?sensorCode=SO2&date=2024-10-13&pjuId=2")
 
 // user
