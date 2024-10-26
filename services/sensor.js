@@ -119,3 +119,5 @@ exports.getHourlySensorData = async (sensorCode, startDate, endDate, pjuId) => {
 
   return calculateHourlyAverages(formattedSensorData);
 };
+
+//
