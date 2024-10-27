@@ -4,8 +4,8 @@ exports.calculateHourlyAverages = (data) => {
   const hourlyData = {};
 
   data.forEach((dataPoint) => {
-    // `timestamp` sudah dalam format string yang sesuai zona waktu Asia/Jakarta
-    const hour = DateTime.fromISO(dataPoint.timestamp).hour;
+    // Pastikan timezone Asia/Jakarta
+    const hour = DateTime.fromISO(dataPoint.timestamp, { zone: 'Asia/Jakarta' }).hour;
 
     // Set hour as index
     if (!hourlyData[hour]) {
@@ -15,7 +15,6 @@ exports.calculateHourlyAverages = (data) => {
     hourlyData[hour].push(dataPoint.value);
   });
 
-  // Calculate every index
   const hourlyAverages = Object.keys(hourlyData).map((hour) => {
     const values = hourlyData[hour];
     const average = values.reduce((sum, value) => sum + parseFloat(value), 0) / values.length;
