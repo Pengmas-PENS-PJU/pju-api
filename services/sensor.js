@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { calculateHourlyAverages } = require('../utils/calculate');
 const { convertTimeZone } = require('../utils/convertTimeZone');
+const { DateTime } = require('luxon');
 
 // tambah semua sensor data
 exports.addSensorData = async (sensor, pju_id = null) => {
@@ -32,11 +33,18 @@ exports.getAllLatest = async () => {
   const sensorTypes = await prisma.sensorType.findMany();
 
   const latestSensorDataPromises = sensorTypes.map(async (sensorType) => {
-    return await prisma.sensorData.findFirst({
+    const sensor = await prisma.sensorData.findFirst({
       where: { sensorTypeId: parseInt(sensorType.id) },
       orderBy: { timestamp: 'desc' },
       include: { sensorType: true },
     });
+
+    const covertedSensor = {
+      ...sensor,
+      timestamp: convertTimeZone(sensor.timestamp),
+    };
+
+    return covertedSensor;
   });
 
   return await Promise.all(latestSensorDataPromises);
@@ -77,7 +85,7 @@ exports.getSensorByFilter = async (filter) => {
 
     // get sensor by type
     const sensorDataPromises = sensorTypes.map(async (sensorType) => {
-      return await prisma.sensorData.findFirst({
+      const sensor = await prisma.sensorData.findFirst({
         where: {
           sensorTypeId: sensorType.id,
         },
@@ -85,6 +93,13 @@ exports.getSensorByFilter = async (filter) => {
           timestamp: 'desc',
         },
       });
+
+      const covertedSensor = {
+        ...sensor,
+        timestamp: convertTimeZone(sensor.timestamp),
+      };
+
+      return covertedSensor;
     });
 
     const sensorDataResults = await Promise.all(sensorDataPromises);
