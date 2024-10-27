@@ -1,10 +1,13 @@
+const { DateTime } = require('luxon');
+
 exports.calculateHourlyAverages = (data) => {
   const hourlyData = {};
 
   data.forEach((dataPoint) => {
-    const hour = new Date(dataPoint.timestamp).getHours();
+    // `timestamp` sudah dalam format string yang sesuai zona waktu Asia/Jakarta
+    const hour = DateTime.fromISO(dataPoint.timestamp).hour;
 
-    // set hour as index
+    // Set hour as index
     if (!hourlyData[hour]) {
       hourlyData[hour] = [];
     }
@@ -12,7 +15,7 @@ exports.calculateHourlyAverages = (data) => {
     hourlyData[hour].push(dataPoint.value);
   });
 
-  // calculate every index
+  // Calculate every index
   const hourlyAverages = Object.keys(hourlyData).map((hour) => {
     const values = hourlyData[hour];
     const average = values.reduce((sum, value) => sum + parseFloat(value), 0) / values.length;

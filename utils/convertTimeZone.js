@@ -7,7 +7,7 @@ const convertTimeZone = (dateColumn, timeZone = 'Asia/Jakarta') => {
 
   const convertedTime = DateTime.fromJSDate(dateColumn, { zone: 'utc' }).setZone(timeZone);
 
-  return convertedTime;
+  return convertedTime.toISO();
 };
 
 module.exports = {

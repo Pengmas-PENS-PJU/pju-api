@@ -112,12 +112,15 @@ exports.getSensorByFilter = async (filter) => {
 };
 
 exports.getHourlySensorData = async (sensorCode, startDate, endDate, pjuId) => {
+  const startInAsiaJakarta = DateTime.fromJSDate(startDate, { zone: 'Asia/Jakarta' }).toUTC().toJSDate();
+  const endInAsiaJakarta = DateTime.fromJSDate(endDate, { zone: 'Asia/Jakarta' }).toUTC().toJSDate();
+
   const sensorData = await prisma.sensorData.findMany({
     where: {
       code: sensorCode,
       timestamp: {
-        gte: startDate,
-        lt: endDate,
+        gte: startInAsiaJakarta,
+        lt: endInAsiaJakarta,
       },
       pju_id: pjuId,
     },
