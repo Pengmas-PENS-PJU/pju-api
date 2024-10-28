@@ -1,27 +1,13 @@
-const express = require("express");
-const { getIo } = require("../socket");
-const { PrismaClient } = require("@prisma/client");
+const express = require('express');
+const { getIo } = require('../socket');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const sensor = require("../services/sensor");
-const pjuService = require("../services/pjuService.js");
-const configService = require("../services/configService.js");
+const sensor = require('../services/sensor');
+const pjuService = require('../services/pjuService.js');
+const configService = require('../services/configService.js');
+const { DateTime } = require('luxon');
 
-const allowedSensorCodes = [
-  "CO2",
-  "O2",
-  "NO2",
-  "O3",
-  "PM2.5",
-  "PM10",
-  "SO2",
-  "HUM",
-  "TEMP",
-  "SOLAR",
-  "RAINFL",
-  "PRESS",
-  "WINDSPD",
-  "WINDDIR",
-];
+const allowedSensorCodes = ['CO2', 'O2', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'HUM', 'TEMP', 'SOLAR', 'RAINFL', 'PRESS', 'WINDSPD', 'WINDDIR'];
 
 // tambah data sensor
 exports.AddDataSensor = async (req, res) => {
@@ -38,7 +24,7 @@ exports.AddDataSensor = async (req, res) => {
 
     // trigger event dataUpdate di client
     const io = getIo();
-    io.emit("dataUpdate", sensorData);
+    io.emit('dataUpdate', sensorData);
 
     res.json(sensorData);
   } catch (error) {
@@ -53,7 +39,7 @@ exports.GetDataSensor = async (req, res) => {
   try {
     const sensorData = await prisma.sensorData.findMany({
       include: { sensorType: true },
-      orderBy: { timestamp: "desc" },
+      orderBy: { timestamp: 'desc' },
     });
     res.json(sensorData);
   } catch (error) {
@@ -68,7 +54,7 @@ exports.GetDataSensorByType = async (req, res) => {
     const sensorData = await prisma.sensorData.findMany({
       where: { sensorTypeId: sensor_id },
       include: { sensorType: true },
-      orderBy: { timestamp: "desc" },
+      orderBy: { timestamp: 'desc' },
     });
     res.json(sensorData);
   } catch (error) {
@@ -82,7 +68,7 @@ exports.GetLatestSensorDataByType = async (req, res) => {
     const sensorData = await prisma.sensorData.findFirst({
       where: { sensorTypeId: sensor_id },
       include: { sensorType: true },
-      orderBy: { timestamp: "desc" },
+      orderBy: { timestamp: 'desc' },
     });
     res.json(sensorData);
   } catch (error) {
@@ -132,44 +118,38 @@ exports.GetSensorDataHourly = async (req, res) => {
     if (!allowedSensorCodes.includes(sensorCode)) {
       return res.status(400).json({
         success: false,
-        message: "Sensor code " + sensorCode + " is not allowed",
+        message: 'Sensor code ' + sensorCode + ' is not allowed',
         data: {},
       });
     }
 
     // check date
-    if (typeof date == "undefined" || date == null) {
+    if (typeof date == 'undefined' || date == null) {
       return res.status(400).json({
         success: false,
-        message: "Date is required",
+        message: 'Date is required',
         data: {},
       });
     }
 
-    const startDate = new Date(date);
-    const endDate = new Date(date);
-    endDate.setDate(startDate.getDate() + 1);
+    const startDate = DateTime.fromISO(date, { zone: 'Asia/Jakarta' }).startOf('day').toJSDate();
+    const endDate = DateTime.fromISO(date, { zone: 'Asia/Jakarta' }).endOf('day').toJSDate();
 
     // check if pju exist
     await pjuService.getPjuById(pju_id);
 
-    const result = await sensor.getHourlySensorData(
-      sensorCode,
-      startDate,
-      endDate,
-      pju_id
-    );
+    const result = await sensor.getHourlySensorData(sensorCode, startDate, endDate, pju_id);
 
     return res.status(200).json({
       success: true,
-      message: "Berhasl mengambil data",
+      message: 'Berhasl mengambil data',
       data: result,
     });
   } catch (error) {
-    console.error("Error getting data:", error.message);
+    console.error('Error getting data:', error.message);
     res.status(error.statusCode || 500).json({
       success: false,
-      message: "Terjadi kesalahan mengambil data",
+      message: 'Terjadi kesalahan mengambil data',
       error: error.message,
       data: {},
     });
