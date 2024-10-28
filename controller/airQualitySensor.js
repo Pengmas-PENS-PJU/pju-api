@@ -6,6 +6,7 @@ const { validateSensorPayload } = require('../validate/validate.js');
 const pjuService = require('../services/pjuService.js');
 const configService = require('../services/configService.js');
 const { getAirQualityISPU } = require('../services/airQualityService.js');
+const { DateTime } = require('luxon');
 
 const allowedSensorCodes = ['CO2', 'O2', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2'];
 
@@ -34,6 +35,10 @@ exports.AddAirQualityData = async (req, res) => {
 
     if (sensor) {
       result = await sensorService.addSensorData(sensor, ValidPjuId);
+
+      const startOfDayInUTC = DateTime.now().setZone('Asia/Jakarta').startOf('day').toUTC().toJSDate();
+
+      await sensorService.DeleteSensorDataByTimestamp(startOfDayInUTC, ValidPjuId);
     } else {
       return res.status(400).json({
         success: false,

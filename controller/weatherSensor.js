@@ -1,20 +1,13 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { getIo } = require("../socket");
-const sensorService = require("../services/sensor.js");
-const { validateSensorPayload } = require("../validate/validate.js");
-const pjuService = require("../services/pjuService.js");
-const configService = require("../services/configService.js");
+const { getIo } = require('../socket');
+const sensorService = require('../services/sensor.js');
+const { validateSensorPayload } = require('../validate/validate.js');
+const pjuService = require('../services/pjuService.js');
+const configService = require('../services/configService.js');
+const { DateTime } = require('luxon');
 
-const allowedSensorCodes = [
-  "HUM",
-  "TEMP",
-  "SOLAR",
-  "RAINFL",
-  "PRESS",
-  "WINDSPD",
-  "WINDDIR",
-];
+const allowedSensorCodes = ['HUM', 'TEMP', 'SOLAR', 'RAINFL', 'PRESS', 'WINDSPD', 'WINDDIR'];
 
 // post data
 exports.AddWeatherData = async (req, res) => {
@@ -37,14 +30,18 @@ exports.AddWeatherData = async (req, res) => {
     await pjuService.getPjuById(ValidPjuId);
 
     // check config
-    await configService.checkDataSentConfig(ValidPjuId, "weather");
+    await configService.checkDataSentConfig(ValidPjuId, 'weather');
 
     if (sensor) {
       result = await sensorService.addSensorData(sensor, ValidPjuId);
+
+      const startOfDayInUTC = DateTime.now().setZone('Asia/Jakarta').startOf('day').toUTC().toJSDate();
+
+      await sensorService.DeleteSensorDataByTimestamp(startOfDayInUTC, ValidPjuId);
     } else {
       return res.status(400).json({
         success: false,
-        message: "Data tidak boleh kosong",
+        message: 'Data tidak boleh kosong',
         data: {},
       });
     }
@@ -52,19 +49,19 @@ exports.AddWeatherData = async (req, res) => {
     // trigger frontend
     if (result) {
       const io = getIo();
-      io.emit("weatherUpdate", result);
+      io.emit('weatherUpdate', result);
     }
 
     return res.status(201).json({
       success: true,
-      message: "Berhasil memasukkan data",
+      message: 'Berhasil memasukkan data',
       data: result,
     });
   } catch (error) {
-    console.error("Error saving data:", error.message);
+    console.error('Error saving data:', error.message);
     res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan saat menyimpan data",
+      message: 'Terjadi kesalahan saat menyimpan data',
       error: error.message,
       data: {},
     });
@@ -74,20 +71,18 @@ exports.AddWeatherData = async (req, res) => {
 // get weather sensor data
 exports.GetWeatherData = async (req, res) => {
   try {
-    const weatherData = await sensorService.getSensorByFilter(
-      allowedSensorCodes
-    );
+    const weatherData = await sensorService.getSensorByFilter(allowedSensorCodes);
 
     return res.status(200).json({
       success: true,
-      message: "Berhasil mengambil data",
+      message: 'Berhasil mengambil data',
       data: weatherData,
     });
   } catch (error) {
-    console.error("Error getting monitor data:", error.message);
+    console.error('Error getting monitor data:', error.message);
     res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan saat mengambil data",
+      message: 'Terjadi kesalahan saat mengambil data',
       error: error.message,
       data: {},
     });

@@ -135,4 +135,15 @@ exports.getHourlySensorData = async (sensorCode, startDate, endDate, pjuId) => {
   return calculateHourlyAverages(formattedSensorData);
 };
 
+exports.DeleteSensorDataByTimestamp = async (timestamp, pjuId) => {
+  await prisma.sensorData.deleteMany({
+    where: {
+      timestamp: {
+        lt: timestamp,
+      },
+      pju_id: pjuId,
+    },
+  });
+};
+
 //
