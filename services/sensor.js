@@ -6,6 +6,8 @@ const { DateTime } = require('luxon');
 
 // tambah semua sensor data
 exports.addSensorData = async (sensor, pju_id = null) => {
+  const devidedBy10SensorCode = ['NO2', 'SO2', 'O3']
+
   const sensorPromises = sensor.map(async (sensorItem) => {
     const sensorType = await prisma.sensorType.findUnique({
       where: { code: sensorItem.sensorCode },
@@ -15,15 +17,10 @@ exports.addSensorData = async (sensor, pju_id = null) => {
       throw new Error(`Sensor type with code ${sensorItem.sensorCode} not found`);
     }
 
-    const devidedBy10SensorCode = ['NO2', 'SO2', 'O3']
-
     if (devidedBy10SensorCode.includes(sensorItem.sensorCode)) {
       sensorItem.value = (sensorItem.value / 10).toFixed(2); 
       sensorItem.value = parseFloat(sensorItem.value); 
     }
-    
-
-    if (sensorItem.sensor)
 
     return await prisma.sensorData.create({
       data: {
