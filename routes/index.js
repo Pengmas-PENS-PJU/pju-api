@@ -78,27 +78,27 @@ router.patch('/profile/update-password', authenticateToken, updatePasswordValida
 router.get('/api-key', authenticateToken, getApiKey);
 
 // Route untuk RTSP stream
-router.get('/cctv-stream', (req, res) => {
-  const rtspUrl = process.env.RTSP_URL;
+// router.get('/cctv-stream', (req, res) => {
+//   const rtspUrl = process.env.RTSP_URL;
 
-  if (!rtspUrl) {
-    return res.status(400).send('RTSP URL is required');
-  }
+//   if (!rtspUrl) {
+//     return res.status(400).send('RTSP URL is required');
+//   }
 
-  const ffmpeg = new Ffmpeg(rtspUrl)
-    .inputOptions('-rtsp_transport tcp')
-    .noAudio()
-    .videoCodec('mjpeg')
-    .format('mjpeg')
-    .on('error', (err) => {
-      console.error(`Error: ${err.message}`);
-      res.status(500).send('Stream error');
-    });
+//   const ffmpeg = new Ffmpeg(rtspUrl)
+//     .inputOptions('-rtsp_transport tcp')
+//     .noAudio()
+//     .videoCodec('mjpeg')
+//     .format('mjpeg')
+//     .on('error', (err) => {
+//       console.error(`Error: ${err.message}`);
+//       res.status(500).send('Stream error');
+//     });
 
-  const mjpegReqHandler = new MjpegServer(req, res);
-  ffmpeg.pipe(mjpegReqHandler);
-});
+//   const mjpegReqHandler = new MjpegServer(req, res);
+//   ffmpeg.pipe(mjpegReqHandler);
+// });
 
 module.exports = router;
 
-// 
+//
