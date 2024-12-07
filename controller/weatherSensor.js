@@ -6,6 +6,7 @@ const { validateSensorPayload } = require('../validate/validate.js');
 const pjuService = require('../services/pjuService.js');
 const configService = require('../services/configService.js');
 const { DateTime } = require('luxon');
+const { toXlsx } = require('../utils/export.js');
 
 const allowedSensorCodes = ['HUM', 'TEMP', 'SOLAR', 'RAINFL', 'PRESS', 'WINDSPD', 'WINDDIR'];
 
@@ -88,3 +89,48 @@ exports.GetWeatherData = async (req, res) => {
     });
   }
 };
+
+
+// export weather data
+exports.ExportWeatherData = async (req, res) => {
+
+  const paramStartDate = req.query.startDate ?? null;
+  const paramEndDate = req.query.endDate ?? null;
+  try {
+
+    const startDate = paramStartDate != null ? DateTime.fromISO(paramStartDate, { zone: 'Asia/Jakarta' }).startOf('day').toJSDate() : null;
+    const endDate = paramEndDate != null ? DateTime.fromISO(paramEndDate, { zone: 'Asia/Jakarta' }).endOf('day').toJSDate() : null;
+
+    const weatherData = await sensorService.GetSensorDataByRange(
+      allowedSensorCodes,
+      startDate,
+      endDate
+    );
+
+    if (weatherData.length > 0) {
+      const workbook = await toXlsx(weatherData);
+      const filename = `Weather_${DateTime.now().setZone("Asia/Jakarta").toFormat("yyyy-LL-dd_HH-mm-ss")}.xlsx`;
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      res.setHeader("Content-Type","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      res.setHeader("Content-Disposition",`attachment; filename="${filename}"`);
+
+      return res.status(200).send(buffer);
+
+  } else {
+      return res.status(404).json({
+          success: false,
+          message: "Tidak ada data yang ditemukan untuk rentang tanggal ini.",
+      });
+  }
+    
+  } catch (error) {
+    console.error('Error getting monitor data:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan saat mengambil data',
+      error: error.message,
+      data: {},
+    });
+  }
+}

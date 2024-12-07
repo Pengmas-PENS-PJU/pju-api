@@ -6,6 +6,7 @@ const { validateMonitorPayload } = require('../validate/validate.js');
 const pjuService = require('../services/pjuService.js');
 const configService = require('../services/configService.js');
 const { DateTime } = require('luxon');
+const { toXlsx } = require('../utils/export.js');
 
 const allowedMonitorCodes = ['VOLT', 'CURR', 'POW', 'TEMP', 'LUM'];
 
@@ -91,3 +92,53 @@ exports.GetMonitorData = async (req, res) => {
         });
     }
 };
+
+// export weather data
+exports.ExportMonitorData = async (req, res) => {
+    const { pju_id } = req.body;
+
+    const paramStartDate = req.query.startDate ?? null;
+    const paramEndDate = req.query.endDate ?? null;
+
+    try {
+        let ValidPjuId = pjuService.setPjuDefault(pju_id);
+
+        await pjuService.getPjuById(ValidPjuId);
+    
+        const startDate = paramStartDate != null ? DateTime.fromISO(paramStartDate, { zone: 'Asia/Jakarta' }).startOf('day').toJSDate() : null;
+        const endDate = paramEndDate != null ? DateTime.fromISO(paramEndDate, { zone: 'Asia/Jakarta' }).endOf('day').toJSDate() : null;
+
+        const monitorData = await monitorService.GetMonitorDataByRange(
+            allowedMonitorCodes,
+            startDate,
+            endDate,
+            ValidPjuId
+        );
+
+        if (monitorData.length > 0) {
+            const workbook = await toXlsx(monitorData);
+            const filename = `MonitorData_${DateTime.now().setZone("Asia/Jakarta").toFormat("yyyy-LL-dd_HH-mm-ss")}.xlsx`;
+            const buffer = await workbook.xlsx.writeBuffer();
+
+            res.setHeader("Content-Type","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            res.setHeader("Content-Disposition",`attachment; filename="${filename}"`);
+
+            return res.status(200).send(buffer);
+
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: "Tidak ada data yang ditemukan untuk rentang tanggal ini.",
+            });
+        }
+    } catch (error) {
+      console.error('Error getting monitor data:', error.message);
+      res.status(500).json({
+        success: false,
+        message: 'Terjadi kesalahan saat mengambil data',
+        error: error.message,
+        data: {},
+      });
+    }
+  }
+  
