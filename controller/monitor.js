@@ -99,6 +99,7 @@ exports.ExportMonitorData = async (req, res) => {
 
     const paramStartDate = req.query.startDate ?? null;
     const paramEndDate = req.query.endDate ?? null;
+    const paramCode = req.query.code ?? null;
 
     try {
         let ValidPjuId = pjuService.setPjuDefault(pju_id);
@@ -108,11 +109,17 @@ exports.ExportMonitorData = async (req, res) => {
         const startDate = paramStartDate != null ? DateTime.fromISO(paramStartDate, { zone: 'Asia/Jakarta' }).startOf('day').toJSDate() : null;
         const endDate = paramEndDate != null ? DateTime.fromISO(paramEndDate, { zone: 'Asia/Jakarta' }).endOf('day').toJSDate() : null;
 
+        // if null or not allowed return null
+        let codes = paramCode ? paramCode.split(',').filter((code) => allowedMonitorCodes.includes(code)): [];
+        if (codes.length === 0) {
+            codes = null;
+        }
+
         const monitorData = await monitorService.GetMonitorDataByRange(
-            allowedMonitorCodes,
+            codes == null ? allowedMonitorCodes : codes,
             startDate,
             endDate,
-            ValidPjuId
+            ValidPjuId,
         );
 
         if (monitorData.length > 0) {
