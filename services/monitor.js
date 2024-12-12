@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { subMonths } = require('date-fns');
 
 // tambah semua data monitor
 exports.addMonitorData = async (monitor, pjuId) => {
@@ -112,11 +113,13 @@ exports.getMonitorById = async (typeId, multiple = true) => {
 };
 
 exports.DeleteByPjuIdAndTimestamp = async (pjuId, timestamp) => {
+    const oneMonthBefore = subMonths(new Date(timestamp), 1);
+    
     return await prisma.monitorData.deleteMany({
         where: {
             pju_id: pjuId,
             timestamp: {
-                lt: timestamp,
+                lt: oneMonthBefore,
             },
         },
     });
