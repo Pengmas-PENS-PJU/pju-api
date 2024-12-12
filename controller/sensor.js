@@ -7,7 +7,22 @@ const pjuService = require('../services/pjuService.js');
 const configService = require('../services/configService.js');
 const { DateTime } = require('luxon');
 
-const allowedSensorCodes = ['CO2', 'O2', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'HUM', 'TEMP', 'SOLAR', 'RAINFL', 'PRESS', 'WINDSPD', 'WINDDIR'];
+const allowedSensorCodes = [
+  'CO2',
+  'O2',
+  'NO2',
+  'O3',
+  'PM2.5',
+  'PM10',
+  'SO2',
+  'HUM',
+  'TEMP',
+  'SOLAR',
+  'RAINFL',
+  'PRESS',
+  'WINDSPD',
+  'WINDDIR',
+];
 
 // tambah data sensor
 exports.AddDataSensor = async (req, res) => {
@@ -132,13 +147,22 @@ exports.GetSensorDataHourly = async (req, res) => {
       });
     }
 
-    const startDate = DateTime.fromISO(date, { zone: 'Asia/Jakarta' }).startOf('day').toJSDate();
-    const endDate = DateTime.fromISO(date, { zone: 'Asia/Jakarta' }).endOf('day').toJSDate();
+    const startDate = DateTime.fromISO(date, { zone: 'Asia/Jakarta' })
+      .startOf('day')
+      .toJSDate();
+    const endDate = DateTime.fromISO(date, { zone: 'Asia/Jakarta' })
+      .endOf('day')
+      .toJSDate();
 
     // check if pju exist
     await pjuService.getPjuById(pju_id);
 
-    const result = await sensor.getHourlySensorData(sensorCode, startDate, endDate, pju_id);
+    const result = await sensor.getHourlySensorData(
+      sensorCode,
+      startDate,
+      endDate,
+      pju_id
+    );
 
     return res.status(200).json({
       success: true,
@@ -155,3 +179,67 @@ exports.GetSensorDataHourly = async (req, res) => {
     });
   }
 };
+
+exports.GetLastSensorDate = async (req, res) => {
+  const pju_id = parseInt(req.params.pjuId, 10);
+
+  try {
+    await pjuService.getPjuById(pju_id);
+
+    const result = await sensor.GetSensorDataDate(true, pju_id);
+
+    if (result == null) {
+      return res.status(404).json({
+        success: false,
+        message: 'No sensor data found',
+        data: null,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Last sensor data date retrieved successfully',
+      data: result,
+    });
+  } catch (error) {
+    console.error('Error getting data:', error.message);
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message,
+      data: {},
+    });
+  }
+};
+
+exports.GetFirstSensorDate = async (req, res) => {
+  const pju_id = parseInt(req.params.pjuId, 10);
+
+  try {
+    await pjuService.getPjuById(pju_id);
+
+    const result = await sensor.GetSensorDataDate(false, pju_id);
+
+    if (result == null) {
+      return res.status(404).json({
+        success: false,
+        message: 'No sensor data found',
+        data: null,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'First sensor data date retrieved successfully',
+      data: result,
+    });
+  } catch (error) {
+    console.error('Error getting data:', error.message);
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message,
+      data: {},
+    });
+  }
+}

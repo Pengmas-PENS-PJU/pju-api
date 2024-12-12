@@ -1,38 +1,38 @@
-const { DateTime } = require('luxon');
+const { DateTime } = require('luxon')
 
 const convertTimeZone = (dateColumn, timeZone = 'Asia/Jakarta') => {
   if (!dateColumn) {
-    return null;
+    return null
   }
 
-  const convertedTime = DateTime.fromJSDate(dateColumn, { zone: 'utc' }).setZone(timeZone);
+  const convertedTime = DateTime.fromJSDate(dateColumn, {
+    zone: 'utc',
+  }).setZone(timeZone)
 
-  return convertedTime.toISO();
-};
+  return convertedTime.toISO()
+}
 
 const toLocalString = (dateColumn) => {
   if (!dateColumn) {
-    return null;
+    return null
   }
 
-  const date = new Date(dateColumn);
+  const date = new Date(dateColumn)
 
   const options = {
-    year: 'numeric', 
-    month: 'numeric', 
-    day: 'numeric', 
-    hour: 'numeric', 
-    minute: 'numeric', 
-    second: 'numeric', 
-    hour12: false, 
-};
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false,
+  }
 
-  return date.toLocaleString('id-ID', options); 
+  return date.toLocaleString('id-ID', options)
 }
-
 
 module.exports = {
   convertTimeZone,
   toLocalString,
-};
-
+}

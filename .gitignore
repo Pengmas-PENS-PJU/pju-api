@@ -6,3 +6,5 @@ client-test/
 dist/*
 dist
 # /client_test
+.prettierrc
+.editorconfig

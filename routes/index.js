@@ -1,8 +1,8 @@
 const express = require('express');
-const { GetDataSensor, AddDataSensor, GetSensorTypes, AddSensorType, GetDataSensorByType, GetLatestSensorDataByType, GetSensorDataHourly } = require('../controller/sensor.js');
+const { GetLastSensorDate, GetFirstSensorDate, GetSensorDataHourly } = require('../controller/sensor.js');
 const { AddWeatherData, GetWeatherData, ExportWeatherData } = require('../controller/weatherSensor.js');
 const { AddAirQualityData, GetAirQualityData, GetAirQualityISPU, ExportAirQualityData } = require('../controller/airQualitySensor.js');
-const { AddMonitorData, GetMonitorData, ExportMonitorData } = require('../controller/monitor.js');
+const { AddMonitorData, GetMonitorData, ExportMonitorData, GetFirstMonitorDate, GetLastMonitorDate } = require('../controller/monitor.js');
 const { AddAll, GetAll } = require('../controller/request.js');
 const { AddLampLog, saveLampLog, getLastLampStatus } = require('../controller/lamp.js');
 const { LoginUser, GetCurrentUser, getApiKey, RefreshToken, LogoutUser } = require('../controller/user.js');
@@ -39,7 +39,7 @@ const router = express.Router();
 // weather only
 router.get('/weather', GetWeatherData);
 router.post('/weather', validateKey, AddWeatherData);
-router.get('/weather/export', ExportWeatherData) 
+router.get('/weather/export', ExportWeatherData)
 
 // air quality only
 router.get('/air-quality', GetAirQualityData);
@@ -47,10 +47,15 @@ router.post('/air-quality', validateKey, AddAirQualityData);
 router.get('/air-quality/:pjuId/ispu', GetAirQualityISPU);
 router.get('/air-quality/export', ExportAirQualityData);
 
+router.get('/sensor/last-date/:pjuId', GetLastSensorDate);
+router.get('/sensor/first-date/:pjuId', GetFirstSensorDate);
+
 // monitor only
 router.get('/monitor/:pjuId', GetMonitorData);
 router.post('/monitor', validateKey, AddMonitorData);
 router.get('/monitor/:pjuId/export', ExportMonitorData)
+router.get('/monitor/last-date/:pjuId', GetLastMonitorDate);
+router.get('/monitor/first-date/:pjuId', GetFirstMonitorDate);
 
 // lamp only
 router.post('/lamp', validateKey, saveLampLog);
