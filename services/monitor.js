@@ -1,6 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { subMonths } = require('date-fns');
+const { DateTime } = require('luxon');
+const { convertTimeZone, toLocalString } = require('../utils/convertTimeZone');
 
 // tambah semua data monitor
 exports.addMonitorData = async (monitor, pjuId) => {
@@ -124,3 +126,34 @@ exports.DeleteByPjuIdAndTimestamp = async (pjuId, timestamp) => {
         },
     });
 };
+
+
+exports.GetMonitorDataByRange = async (monitorCode = [], startDate = null, endDate = null, pju_id) => {
+    const monitorData = await prisma.monitorData.findMany({
+        where: {
+          code: { in: monitorCode },
+          ...(startDate || endDate
+            ? {
+                timestamp: {
+                  ...(startDate && { gte: startDate }),
+                  ...(endDate && { lt: endDate }),
+                },
+              }
+            : {}),
+            pju_id: pju_id,
+        },
+        orderBy: {
+          timestamp: 'asc',
+        },
+      });    
+
+    const formattedMonitorData = monitorData.map((data) => {
+        data.timestamp = toLocalString(data.timestamp);
+
+        return data;
+    });
+
+
+    return formattedMonitorData;
+  };
+  

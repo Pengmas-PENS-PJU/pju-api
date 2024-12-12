@@ -1,8 +1,8 @@
 const express = require('express');
 const { GetDataSensor, AddDataSensor, GetSensorTypes, AddSensorType, GetDataSensorByType, GetLatestSensorDataByType, GetSensorDataHourly } = require('../controller/sensor.js');
-const { AddWeatherData, GetWeatherData } = require('../controller/weatherSensor.js');
-const { AddAirQualityData, GetAirQualityData, GetAirQualityISPU } = require('../controller/airQualitySensor.js');
-const { AddMonitorData, GetMonitorData } = require('../controller/monitor.js');
+const { AddWeatherData, GetWeatherData, ExportWeatherData } = require('../controller/weatherSensor.js');
+const { AddAirQualityData, GetAirQualityData, GetAirQualityISPU, ExportAirQualityData } = require('../controller/airQualitySensor.js');
+const { AddMonitorData, GetMonitorData, ExportMonitorData } = require('../controller/monitor.js');
 const { AddAll, GetAll } = require('../controller/request.js');
 const { AddLampLog, saveLampLog, getLastLampStatus } = require('../controller/lamp.js');
 const { LoginUser, GetCurrentUser, getApiKey, RefreshToken, LogoutUser } = require('../controller/user.js');
@@ -39,15 +39,18 @@ const router = express.Router();
 // weather only
 router.get('/weather', GetWeatherData);
 router.post('/weather', validateKey, AddWeatherData);
+router.get('/weather/export', ExportWeatherData) 
 
 // air quality only
 router.get('/air-quality', GetAirQualityData);
 router.post('/air-quality', validateKey, AddAirQualityData);
 router.get('/air-quality/:pjuId/ispu', GetAirQualityISPU);
+router.get('/air-quality/export', ExportAirQualityData);
 
 // monitor only
 router.get('/monitor/:pjuId', GetMonitorData);
 router.post('/monitor', validateKey, AddMonitorData);
+router.get('/monitor/:pjuId/export', ExportMonitorData)
 
 // lamp only
 router.post('/lamp', validateKey, saveLampLog);
