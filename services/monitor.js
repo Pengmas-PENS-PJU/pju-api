@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { subMonths } = require('date-fns');
 const { DateTime } = require('luxon');
 const { convertTimeZone, toLocalString } = require('../utils/convertTimeZone');
 
@@ -114,11 +115,13 @@ exports.getMonitorById = async (typeId, multiple = true) => {
 };
 
 exports.DeleteByPjuIdAndTimestamp = async (pjuId, timestamp) => {
+    const oneMonthBefore = subMonths(new Date(timestamp), 1);
+    
     return await prisma.monitorData.deleteMany({
         where: {
             pju_id: pjuId,
             timestamp: {
-                lt: timestamp,
+                lt: oneMonthBefore,
             },
         },
     });

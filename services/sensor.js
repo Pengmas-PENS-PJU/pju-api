@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 const { calculateHourlyAverages } = require('../utils/calculate');
 const { convertTimeZone, toLocalString } = require('../utils/convertTimeZone');
 const { DateTime } = require('luxon');
+const { subMonths } = require('date-fns');
 
 // tambah semua sensor data
 exports.addSensorData = async (sensor, pju_id = null) => {
@@ -142,11 +143,13 @@ exports.getHourlySensorData = async (sensorCode, startDate, endDate, pjuId) => {
     return calculateHourlyAverages(formattedSensorData);
 };
 
-exports.DeleteSensorDataByTimestamp = async (timestamp, pjuId) => {
+exports.DeleteSensorDataOlderThanOneMonth = async (timestamp, pjuId) => {
+    const oneMonthBefore = subMonths(new Date(timestamp), 1);
+
     await prisma.sensorData.deleteMany({
         where: {
             timestamp: {
-                lt: timestamp,
+                lt: oneMonthBefore,
             },
             pju_id: pjuId,
         },
